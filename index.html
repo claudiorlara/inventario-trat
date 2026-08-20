@@ -113,6 +113,17 @@
         .btn-hist-load:hover { background: #b8682f; }
         .btn-hist-del { background: #c97a3f; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; }
         .btn-hist-del:hover { background: #a86230; }
+        .pwd-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #2b2416; display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
+        .pwd-box { background: #f5f0e8; border-radius: 12px; width: 340px; max-width: 92%; padding: 32px 26px; text-align: center; border: 2px solid #7c705a; box-shadow: 0 6px 30px rgba(0,0,0,0.5); }
+        .pwd-box .pwd-logo { font-size: 40px; margin-bottom: 6px; }
+        .pwd-box h1 { font-size: 24px; margin-bottom: 2px; }
+        .pwd-box .subtitle { font-size: 12px; margin-bottom: 8px; }
+        .pwd-box .title-divider { margin: 0 auto 22px; height: 3px; }
+        .pwd-box form { display: flex; flex-direction: column; gap: 10px; }
+        .pwd-box input { padding: 13px 12px; font-size: 17px; text-align: center; border-radius: 6px; border: 1.5px solid #7c705a; }
+        .pwd-box input:focus { border-color: #d17a3d; outline: none; box-shadow: 0 0 5px rgba(209,122,61,0.5); }
+        .pwd-box button { padding: 13px; font-size: 15px; width: 100%; justify-content: center; }
+        .pwd-erro { color: #c62828; font-size: 13px; font-weight: 700; margin-top: 12px; min-height: 18px; }
         @media (max-width: 1024px) {
             body { padding: 8px; }
             h1 { font-size: 22px; }
@@ -181,6 +192,18 @@
             Se voce abriu este arquivo pelo WhatsApp, E-mail ou outro app, toque em "Compartilhar" e escolha "Abrir no Safari" (iPhone/iPad) ou "Abrir com Chrome" (Android) em vez de usar a pre-visualizacao do proprio app.
         </div>
     </noscript>
+    <div id="pwdOverlay" class="pwd-overlay">
+        <div class="pwd-box">
+            <h1>Planilha de Inventario</h1>
+            <div class="subtitle">Tratamento de Superficie - Laboratorio</div>
+            <div class="title-divider"></div>
+            <form id="pwdForm" onsubmit="tentarEntrar(event)">
+                <input type="password" id="pwdInput" placeholder="Digite a senha de acesso" autocomplete="off" autofocus>
+                <button type="submit" class="btn-save">Entrar</button>
+            </form>
+            <div class="pwd-erro" id="pwdErro"></div>
+        </div>
+    </div>
     <div class="container">
         <h1>Planilha de Inventario</h1>
         <div class="subtitle">Tratamento de Superficie - Laboratorio</div>
@@ -400,19 +423,28 @@
             if (duplicados.length) { console.warn('Codigos duplicados encontrados no cadastro:', duplicados); }
         }
 
+        function normalizarTexto(texto) {
+            return texto.trim()
+                .replace(/\s*[x×*\u00D7X]\s*/g, 'x')
+                .replace(/,/g, '.')
+                .replace(/[+]+/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
         function calcularTotal(texto) {
             if (!texto || texto.trim() === '') return 0;
-            texto = texto.trim();
+            var normal = normalizarTexto(texto);
             var total = 0;
-            var partes = texto.split(/[\s+]+/).filter(function(p) { return p !== ''; });
+            var partes = normal.split(' ').filter(function(p) { return p !== ''; });
             for (var i = 0; i < partes.length; i++) {
-                var mult = partes[i].split(/x|\*|X/i);
+                var mult = partes[i].split('x');
                 if (mult.length === 2) {
-                    var a = parseFloat(mult[0].replace(',', '.'));
-                    var b = parseFloat(mult[1].replace(',', '.'));
+                    var a = parseFloat(mult[0]);
+                    var b = parseFloat(mult[1]);
                     if (!isNaN(a) && !isNaN(b)) total += a * b;
                 } else {
-                    var num = parseFloat(partes[i].replace(',', '.'));
+                    var num = parseFloat(partes[i]);
                     if (!isNaN(num)) total += num;
                 }
             }
@@ -420,17 +452,16 @@
         }
 
         function validarFormato(texto) {
-            var partes = texto.split(/[\s+]+/).filter(function(p) { return p !== ''; });
+            if (!texto || texto.trim() === '') return false;
+            var normal = normalizarTexto(texto);
+            var partes = normal.split(' ').filter(function(p) { return p !== ''; });
             if (partes.length === 0) return false;
             for (var i = 0; i < partes.length; i++) {
-                var mult = partes[i].split(/x|\*|X/i);
+                var mult = partes[i].split('x');
                 if (mult.length === 2) {
-                    var a = parseFloat(mult[0].replace(',', '.'));
-                    var b = parseFloat(mult[1].replace(',', '.'));
-                    if (isNaN(a) || isNaN(b)) return false;
+                    if (isNaN(parseFloat(mult[0])) || isNaN(parseFloat(mult[1]))) return false;
                 } else if (mult.length === 1) {
-                    var num = parseFloat(partes[i].replace(',', '.'));
-                    if (isNaN(num)) return false;
+                    if (isNaN(parseFloat(partes[i]))) return false;
                 } else { return false; }
             }
             return true;
@@ -442,10 +473,24 @@
             agendarSalvarRascunho();
         }
 
+        function cardsVisiveis() {
+            var c = document.getElementById('cardsContainer');
+            return c ? window.getComputedStyle(c).display !== 'none' : false;
+        }
+
+        function elPorItem(tipo, codigo) {
+            if (cardsVisiveis()) {
+                var card = document.getElementById('card_' + codigo);
+                var e = card ? card.querySelector('#' + tipo + '_' + codigo) : null;
+                if (e) return e;
+            }
+            return document.getElementById(tipo + '_' + codigo);
+        }
+
         function calcular(codigo) {
-            var estoque = document.getElementById('estoque_' + codigo);
-            var pesoEl = document.getElementById('peso_' + codigo);
-            var resultado = document.getElementById('resultado_' + codigo);
+            var estoque = elPorItem('estoque', codigo);
+            var pesoEl = elPorItem('peso', codigo);
+            var resultado = elPorItem('resultado', codigo);
             if (!estoque || !resultado) return;
             resultado.classList.remove('status-ok', 'status-comprar');
             estoque.classList.remove('input-invalido');
@@ -476,8 +521,8 @@
         }
 
         function onVasilhameChange(codigo) {
-            var sel = document.getElementById('vas_' + codigo);
-            var pesoEl = document.getElementById('peso_' + codigo);
+            var sel = elPorItem('vas', codigo);
+            var pesoEl = elPorItem('peso', codigo);
             if (sel && pesoEl) { pesoEl.value = sel.value; }
             calcular(codigo);
         }
@@ -505,7 +550,7 @@
                 '</div>' +
                 '<div class="card-fields">' +
                     '<div class="card-field"><label>Estoque Fisico</label>' +
-                        '<input type="text" id="estoque_' + item.codigo + '" inputmode="decimal" placeholder="ex: 8x25" oninput="calcular(\'' + item.codigo + '\')"></div>' +
+                        '<input type="text" id="estoque_' + item.codigo + '" inputmode="text" placeholder="ex: 8x25" oninput="calcular(\'' + item.codigo + '\')"></div>' +
                     '<div class="card-field"><label>Vasilhame</label>' +
                         '<select id="vas_' + item.codigo + '" onchange="onVasilhameChange(\'' + item.codigo + '\')">' + opts + '</select></div>' +
                     '<div class="card-field" style="display:none;"><input type="text" id="peso_' + item.codigo + '" readonly></div>' +
@@ -555,7 +600,7 @@
             if (!el) return;
             var comprar = 0, ok = 0, preenchido = 0;
             todosDados.forEach(function(item) {
-                var r = document.getElementById('resultado_' + item.codigo);
+                var r = elPorItem('resultado', item.codigo);
                 if (!r || !r.value) return;
                 preenchido++;
                 if (r.classList.contains('status-comprar')) comprar++; else ok++;
@@ -569,7 +614,7 @@
         }
 
         function statusDoItem(item) {
-            var r = document.getElementById('resultado_' + item.codigo);
+            var r = elPorItem('resultado', item.codigo);
             if (!r || !r.value) return 'pendente';
             return r.classList.contains('status-comprar') ? 'comprar' : 'ok';
         }
@@ -612,8 +657,8 @@
         function coletarDadosAtuais() {
             var dadosSalvos = {};
             todosDados.forEach(function(item) {
-                var estoque = document.getElementById('estoque_' + item.codigo);
-                var vas = document.getElementById('vas_' + item.codigo);
+                var estoque = elPorItem('estoque', item.codigo);
+                var vas = elPorItem('vas', item.codigo);
                 if (estoque && estoque.value) { dadosSalvos[item.codigo] = { e: estoque.value, v: vas ? vas.value : '' }; }
             });
             return dadosSalvos;
@@ -621,8 +666,8 @@
 
         function aplicarDados(dadosSalvos) {
             todosDados.forEach(function(item) {
-                var estoque = document.getElementById('estoque_' + item.codigo);
-                var vas = document.getElementById('vas_' + item.codigo);
+                var estoque = elPorItem('estoque', item.codigo);
+                var vas = elPorItem('vas', item.codigo);
                 var d = dadosSalvos[item.codigo];
                 if (estoque) estoque.value = (d && d.e) ? d.e : '';
                 if (vas) vas.value = (d && d.v !== undefined) ? d.v : '';
@@ -718,10 +763,10 @@
         function exportarCSV() {
             var csv = 'Codigo;Descricao;Estoque Fisico;Vasilhame;Peso;Total Liquido\n';
             for (var i = 0; i < todosDados.length; i++) {
-                var e = document.getElementById('estoque_' + todosDados[i].codigo);
-                var v = document.getElementById('vas_' + todosDados[i].codigo);
-                var p = document.getElementById('peso_' + todosDados[i].codigo);
-                var r = document.getElementById('resultado_' + todosDados[i].codigo);
+                var e = elPorItem('estoque', todosDados[i].codigo);
+                var v = elPorItem('vas', todosDados[i].codigo);
+                var p = elPorItem('peso', todosDados[i].codigo);
+                var r = elPorItem('resultado', todosDados[i].codigo);
                 csv += todosDados[i].codigo + ';' + todosDados[i].descricao + ';' + (e ? e.value : '') + ';' + (v ? v.options[v.selectedIndex].text : '') + ';' + (p ? p.value : '') + ';' + (r ? r.value : '') + '\n';
             }
             var blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
@@ -735,10 +780,10 @@
         function limparEstoque() {
             if (confirm('Limpar todos os dados?')) {
                 todosDados.forEach(function(item) {
-                    var e = document.getElementById('estoque_' + item.codigo);
-                    var v = document.getElementById('vas_' + item.codigo);
-                    var p = document.getElementById('peso_' + item.codigo);
-                    var r = document.getElementById('resultado_' + item.codigo);
+                    var e = elPorItem('estoque', item.codigo);
+                    var v = elPorItem('vas', item.codigo);
+                    var p = elPorItem('peso', item.codigo);
+                    var r = elPorItem('resultado', item.codigo);
                     if (e) { e.value = ''; e.classList.remove('input-invalido'); e.removeAttribute('title'); }
                     if (v) v.value = '';
                     if (p) p.value = '';
@@ -772,6 +817,29 @@
 
         document.getElementById('historicoOverlay').addEventListener('click', function(e) { if (e.target === this) fecharHistorico(); });
         document.addEventListener('keydown', function(e) { if (e.key === 'Escape') fecharHistorico(); });
+
+        var SENHA_ACESSO = 'gal2811';
+
+        function tentarEntrar(e) {
+            if (e) e.preventDefault();
+            var input = document.getElementById('pwdInput');
+            var erro = document.getElementById('pwdErro');
+            if (input && input.value === SENHA_ACESSO) {
+                try { sessionStorage.setItem('inventario_logado', '1'); } catch (err) {}
+                document.getElementById('pwdOverlay').style.display = 'none';
+                mostrarStatus('Acesso liberado. Boa contagem!');
+                return false;
+            }
+            if (erro) erro.textContent = 'Senha incorreta.';
+            if (input) { input.value = ''; input.focus(); }
+            return false;
+        }
+
+        try {
+            if (sessionStorage.getItem('inventario_logado') === '1') {
+                document.getElementById('pwdOverlay').style.display = 'none';
+            }
+        } catch (e) {}
 
         carregarTabela();
 
