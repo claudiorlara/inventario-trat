@@ -84,18 +84,150 @@
         .status { text-align: center; margin-top: 12px; color: #7c705a; font-size: 12px; font-weight: 500; min-height: 16px; }
         .legend { text-align: center; margin: 10px 0 18px; font-size: 11.5px; color: #2b2416; background: #b7a98d; padding: 12px; border-radius: 8px; line-height: 1.6; }
         .legend b { color: #2b2416; }
-        .stats-bar { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 0 0 16px; }
-        .stat-item { font-size: 12px; font-weight: 700; padding: 7px 14px; border-radius: 20px; background: #e8e2d4; color: #2b2416; letter-spacing: 0.3px; }
-        .stat-item b { font-size: 14px; margin-left: 4px; }
-        .stat-comprar { background: #ffebee; color: #c62828; }
-        .stat-ok { background: #e8f5e9; color: #2e7d32; }
-        .stat-pendente { background: #eeeeee; color: #616161; }
-        .filtro-bar { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; align-items: center; justify-content: center; }
-        .filtro-bar input[type="text"] { max-width: 280px; padding: 9px 12px; border: 1.5px solid #7c705a; border-radius: 20px; font-size: 13px; background: #fff; text-align: left; }
-        .filtro-bar select { max-width: 170px; padding: 9px 12px; border: 1.5px solid #7c705a; border-radius: 20px; font-size: 13px; background: #fff; }
-        .filtro-bar .btn-limpar-filtro { padding: 8px 14px; border-radius: 20px; border: 1.5px solid #7c705a; background: #f5f0e8; color: #2b2416; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; }
-        .filtro-bar .btn-limpar-filtro:hover { background: #e8e2d4; }
-        td.filtro-oculto, .card.filtro-oculto { opacity: 0.1; pointer-events: none; transition: opacity 0.15s ease; }
+
+        .colaboradores-box { background:#fffaf0; border:1.5px solid #d8c7a4; border-radius:10px; padding:16px 18px; margin:0 0 18px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
+        .colaboradores-titulo { display:flex; align-items:center; gap:8px; font-size:15px; font-weight:800; color:#2b2416; margin-bottom:12px; }
+        .colaboradores-form { display:grid; grid-template-columns:minmax(220px,1fr) 120px auto; gap:10px; align-items:end; }
+        .colab-field label { display:block; font-size:10px; font-weight:800; color:#7c705a; text-transform:uppercase; letter-spacing:.5px; margin-bottom:4px; }
+        .colab-field input,.colab-field select { min-height:40px; padding:8px 10px; font-size:13px; border:1.5px solid #ccc; border-radius:7px; text-align:left; }
+        .colab-field input[readonly] { background:#f0eee9; color:#555; }
+        .btn-add-colab { min-height:40px; border:none; border-radius:7px; padding:8px 16px; background:#7ea87f; color:white; font-family:inherit; font-size:13px; font-weight:700; cursor:pointer; box-shadow:0 2px 5px rgba(0,0,0,.12); transition:.15s ease; }
+        .btn-add-colab:hover { background:#6a956b; transform:translateY(-1px); }
+        .colaboradores-lista { display:flex; flex-wrap:wrap; gap:8px; margin-top:13px; }
+        .colab-item { display:inline-flex; align-items:center; gap:9px; background:white; border:1px solid #ddd2bc; border-radius:8px; padding:8px 10px; box-shadow:0 1px 4px rgba(0,0,0,.06); }
+        .colab-info { line-height:1.25; }
+        .colab-nome { font-size:12px; font-weight:800; color:#333; }
+        .colab-cracha { font-size:10px; color:#7c705a; margin-top:2px; }
+        .btn-remove-colab { border:none; background:#c97a3f; color:white; border-radius:6px; width:28px; height:28px; cursor:pointer; font-size:15px; font-weight:800; }
+        .btn-remove-colab:hover { background:#a86230; }
+        .colab-vazio { width:100%; color:#8a806f; font-size:11px; font-style:italic; padding:4px 0; }
+        .colab-aviso { margin-top:8px; color:#c62828; font-size:11px; font-weight:600; min-height:15px; }
+        @media (max-width:700px) {
+            .colaboradores-form { grid-template-columns:1fr 110px; }
+            .btn-add-colab { grid-column:1/-1; width:100%; }
+            .colaboradores-box { padding:13px; }
+        }
+        @media print {
+            .colaboradores-box { box-shadow:none; border:1px solid #999; background:white; margin-bottom:8px; }
+            .colaboradores-form,.colab-aviso { display:none !important; }
+            .colaboradores-titulo { font-size:12px; margin-bottom:5px; }
+            .colaboradores-lista { margin-top:0; gap:5px; }
+            .colab-item { padding:4px 7px; box-shadow:none; }
+            .btn-remove-colab { display:none !important; }
+            .colab-nome { font-size:10px; }
+            .colab-cracha { font-size:8px; }
+        }
+        .colab-gerenciar {
+            display:flex;
+            flex-wrap:wrap;
+            gap:8px;
+            margin-top:12px;
+            padding-top:12px;
+            border-top:1px solid #e5dccb;
+        }
+        .colab-gerenciar button {
+            border:none;
+            border-radius:7px;
+            padding:9px 14px;
+            cursor:pointer;
+            font-family:inherit;
+            font-size:12px;
+            font-weight:700;
+        }
+        .btn-manage-add { background:#e3b23a; color:#2b2416; }
+        .btn-manage-add:hover { background:#c99e2f; }
+        .btn-manage-del { background:#c97a3f; color:white; }
+        .btn-manage-del:hover { background:#a86230; }
+        .manage-form {
+            display:grid;
+            grid-template-columns:1fr 130px;
+            gap:10px;
+        }
+        .manage-form .full { grid-column:1/-1; }
+        .manage-form label {
+            display:block;
+            font-size:10px;
+            font-weight:800;
+            color:#7c705a;
+            margin-bottom:4px;
+            text-transform:uppercase;
+        }
+        .manage-form input {
+            min-height:40px;
+            padding:8px 10px;
+            border:1.5px solid #ccc;
+            border-radius:7px;
+            font-family:inherit;
+            font-size:13px;
+        }
+        .manage-action {
+            display:flex;
+            gap:8px;
+            margin-top:12px;
+        }
+        .manage-action button {
+            flex:1;
+            min-height:38px;
+            border:none;
+            border-radius:7px;
+            cursor:pointer;
+            font-family:inherit;
+            font-weight:700;
+        }
+        .manage-confirm { background:#7ea87f; color:white; }
+        .manage-cancel { background:#ddd; color:#333; }
+        .manage-delete-select {
+            width:100%;
+            min-height:42px;
+            padding:8px;
+            border:1.5px solid #ccc;
+            border-radius:7px;
+            font-family:inherit;
+            font-size:13px;
+        }
+        @media print {
+            .colab-gerenciar, #colabManageOverlay { display:none !important; }
+        }
+        .responsaveis-impressao {
+            display: none;
+        }
+
+        @media print {
+            .responsaveis-impressao {
+                display: block !important;
+                width: 100%;
+                box-sizing: border-box;
+                margin: 4px 0 8px;
+                padding: 6px 8px;
+                border: 1px solid #888;
+                background: #fff !important;
+                color: #111 !important;
+                font-size: 11px;
+                line-height: 1.35;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .responsaveis-impressao strong {
+                font-weight: 800;
+                color: #111 !important;
+            }
+
+            #responsaveisImpressaoNomes {
+                color: #111 !important;
+                font-weight: 600;
+            }
+        }
+        .pwd-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #2b2416; display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
+        .pwd-box { background: #f5f0e8; border-radius: 12px; width: 340px; max-width: 92%; padding: 32px 26px; text-align: center; border: 2px solid #7c705a; box-shadow: 0 6px 30px rgba(0,0,0,0.5); }
+        .pwd-box h1 { font-size: 24px; margin-bottom: 2px; }
+        .pwd-box .subtitle { font-size: 12px; margin-bottom: 8px; }
+        .pwd-box .title-divider { margin: 0 auto 22px; height: 3px; }
+        .pwd-box form { display: flex; flex-direction: column; gap: 10px; }
+        .pwd-box input { padding: 13px 12px; font-size: 17px; text-align: center; border-radius: 6px; border: 1.5px solid #7c705a; }
+        .pwd-box input:focus { border-color: #d17a3d; outline: none; box-shadow: 0 0 5px rgba(209,122,61,0.5); }
+        .pwd-box button { padding: 13px; font-size: 15px; width: 100%; justify-content: center; }
+        .pwd-erro { color: #c62828; font-size: 13px; font-weight: 700; margin-top: 12px; min-height: 18px; }
         input.input-invalido, .card-field input.input-invalido { border-color: #e65100 !important; background-color: #fff3e0 !important; }
         #fileInput { display: none; }
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; }
@@ -113,18 +245,7 @@
         .btn-hist-load:hover { background: #b8682f; }
         .btn-hist-del { background: #c97a3f; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; }
         .btn-hist-del:hover { background: #a86230; }
-        .pwd-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #2b2416; display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
-        .pwd-box { background: #f5f0e8; border-radius: 12px; width: 340px; max-width: 92%; padding: 32px 26px; text-align: center; border: 2px solid #7c705a; box-shadow: 0 6px 30px rgba(0,0,0,0.5); }
-        .pwd-box .pwd-logo { font-size: 40px; margin-bottom: 6px; }
-        .pwd-box h1 { font-size: 24px; margin-bottom: 2px; }
-        .pwd-box .subtitle { font-size: 12px; margin-bottom: 8px; }
-        .pwd-box .title-divider { margin: 0 auto 22px; height: 3px; }
-        .pwd-box form { display: flex; flex-direction: column; gap: 10px; }
-        .pwd-box input { padding: 13px 12px; font-size: 17px; text-align: center; border-radius: 6px; border: 1.5px solid #7c705a; }
-        .pwd-box input:focus { border-color: #d17a3d; outline: none; box-shadow: 0 0 5px rgba(209,122,61,0.5); }
-        .pwd-box button { padding: 13px; font-size: 15px; width: 100%; justify-content: center; }
-        .pwd-erro { color: #c62828; font-size: 13px; font-weight: 700; margin-top: 12px; min-height: 18px; }
-        @media (max-width: 1024px) {
+        @media (max-width: 900px) {
             body { padding: 8px; }
             h1 { font-size: 22px; }
             .subtitle { font-size: 13px; }
@@ -134,12 +255,6 @@
             .cards-container { display: block; }
             .buttons { gap: 6px; margin-top: 16px; padding-top: 14px; }
             .buttons button { flex: 1 1 calc(50% - 6px); min-width: 130px; padding: 13px 10px; font-size: 12px; justify-content: center; }
-            .filtro-bar input[type="text"], .filtro-bar select { max-width: none; flex: 1 1 auto; }
-        }
-        @media (pointer: coarse) and (min-width: 1025px) {
-            td { padding: 8px 5px; }
-            input, select { min-height: 34px; font-size: 12.5px; }
-            .buttons button { padding: 14px 24px; font-size: 14px; }
         }
         @media (max-width: 400px) {
             h1 { font-size: 18px; }
@@ -154,7 +269,7 @@
             .modal-overlay { display: none !important; }
             body { background: white; }
             .container { box-shadow: none; padding: 0; max-width: 100%; border: none; background: white; }
-            .buttons, .legend, .status, .cards-container, .stats-bar, .filtro-bar { display: none !important; }
+            .buttons, .legend, .status, .cards-container { display: none !important; }
             .table-wrap { display: block !important; }
             .secao-titulo { font-size: 13px; color: #222; background: none; -webkit-text-fill-color: #222; margin: 6px 0 3px; padding: 3px 8px; border-left: 4px solid #d17a3d; font-weight: 700; }
             .secao-lab { margin-top: 50px; }
@@ -186,12 +301,6 @@
     </style>
 </head>
 <body>
-    <noscript>
-        <div style="max-width:600px;margin:40px auto;background:#ffebee;color:#c62828;padding:20px;border-radius:10px;font-weight:700;text-align:center;font-family:sans-serif;font-size:15px;line-height:1.5;">
-            Esta pagina precisa de JavaScript para mostrar a lista de produtos, e ele esta desativado ou bloqueado neste visualizador.<br><br>
-            Se voce abriu este arquivo pelo WhatsApp, E-mail ou outro app, toque em "Compartilhar" e escolha "Abrir no Safari" (iPhone/iPad) ou "Abrir com Chrome" (Android) em vez de usar a pre-visualizacao do proprio app.
-        </div>
-    </noscript>
     <div id="pwdOverlay" class="pwd-overlay">
         <div class="pwd-box">
             <h1>Planilha de Inventario</h1>
@@ -215,22 +324,57 @@
             Digite <b>0</b> para indicar estoque zerado (aparece <b>OK</b>) | Digite <b>X</b> para indicar que nao tem o produto (aparece <b>COMPRAR</b>)
         </div>
         
-        <input type="file" id="fileInput" accept=".json" onchange="lerArquivo(event)">
+        <div class="colaboradores-box">
+            <div class="colaboradores-titulo">👷 Responsáveis pelo Inventário</div>
 
-        <div class="stats-bar" id="statsBar"></div>
+            <div class="colaboradores-form">
+                <div class="colab-field">
+                    <label for="colaboradorSelect">Colaborador</label>
+                    <select id="colaboradorSelect" onchange="atualizarCrachaColaborador()">
+                        <option value="">Selecione o colaborador...</option>
+                    </select>
+                </div>
 
-        <div class="filtro-bar">
-            <input type="text" id="buscaInput" placeholder="Buscar por codigo ou descricao..." oninput="aplicarFiltro()">
-            <select id="statusFiltro" onchange="aplicarFiltro()">
-                <option value="">Todos os status</option>
-                <option value="comprar">Somente Comprar</option>
-                <option value="ok">Somente OK</option>
-                <option value="pendente">Somente Pendentes</option>
-            </select>
-            <button type="button" class="btn-limpar-filtro" onclick="limparFiltro()">Limpar filtro</button>
+                <div class="colab-field">
+                    <label for="colaboradorCracha">Crachá</label>
+                    <input type="text" id="colaboradorCracha" readonly placeholder="Automático">
+                </div>
+
+                <button type="button" class="btn-add-colab" onclick="adicionarResponsavel()">＋ Adicionar ao inventário</button>
+            </div>
+
+            <div class="colaboradores-lista" id="colaboradoresLista">
+                <div class="colab-vazio">Nenhum responsável adicionado ao inventário.</div>
+            </div>
+
+            <div class="colab-gerenciar">
+                <button type="button" class="btn-manage-add" onclick="abrirAdicionarColaborador()">＋ Adicionar outro colaborador</button>
+                <button type="button" class="btn-manage-del" onclick="abrirExcluirColaborador()">− Excluir colaborador existente</button>
+            </div>
+
+            <div id="colabAviso" class="colab-aviso"></div>
         </div>
 
+        <div id="colabManageOverlay" class="modal-overlay">
+            <div class="modal-box colab-manage-box">
+                <div class="modal-header">
+                    <h2 id="colabManageTitulo">Gerenciar colaboradores</h2>
+                    <button class="modal-close" onclick="fecharGerenciadorColaborador()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="colabManageConteudo"></div>
+                </div>
+            </div>
+        </div>
+
+        <input type="file" id="fileInput" accept=".json" onchange="lerArquivo(event)">
+
         <div class="secao-titulo">Tratamento de Superficie (Producao)</div>
+        <div id="responsaveisImpressao" class="responsaveis-impressao">
+            <strong>Responsáveis pelo Inventário:</strong>
+            <span id="responsaveisImpressaoNomes">Nenhum colaborador informado</span>
+        </div>
+
         <div class="table-wrap">
             <table>
                 <thead>
@@ -297,6 +441,222 @@
     </div>
 
     <script>
+        var colaboradoresDisponiveis = [
+            { cracha:"10011", nome:"ADELE OLIVEIRA MALAMAN" },
+            { cracha:"2535", nome:"CLAUDIO ROBERTO RODRIGUES DE MENDONCA" },
+            { cracha:"2811", nome:"CLAUDIO ROBERTO LARA" },
+            { cracha:"4114", nome:"FABIO RAFAEL LEANDRO" },
+            { cracha:"4517", nome:"FELIPE DE CARVALHO CRIPPA" },
+            { cracha:"4693", nome:"LEONARDO ALVES BARBOSA" },
+            { cracha:"5708", nome:"CARLOS GABRIEL DA SILVA" },
+            { cracha:"7259", nome:"BRUNO BEIRAO ROCHA" },
+            { cracha:"7488", nome:"WANDER KAIC OLIVEIRA SILVA" },
+            { cracha:"8433", nome:"PRISCILA CRISTINA DAS NEVES DIOGO" },
+            { cracha:"8814", nome:"MARIA EDUARDA PEREIRA DOS SANTOS" },
+            { cracha:"10272", nome:"MARCOS DANIEL SALES" },
+            { cracha:"6537", nome:"GUSTAVO MARQUES MUTELI" }
+        ];
+
+        // Responsáveis escolhidos para ESTE inventário.
+        var colaboradoresSelecionados = [];
+
+        function carregarOpcoesColaboradores() {
+            var select = document.getElementById('colaboradorSelect');
+            if (!select) return;
+            var h = '<option value="">Selecione o colaborador...</option>';
+            colaboradoresDisponiveis.forEach(function(c, i) {
+                h += '<option value="' + i + '">' + c.nome + ' — Crachá ' + c.cracha + '</option>';
+            });
+            select.innerHTML = h;
+            atualizarCrachaColaborador();
+        }
+
+        function atualizarCrachaColaborador() {
+            var s = document.getElementById('colaboradorSelect');
+            var c = document.getElementById('colaboradorCracha');
+            if (!s || !c) return;
+            c.value = (s.value !== '' && colaboradoresDisponiveis[s.value])
+                ? colaboradoresDisponiveis[s.value].cracha : '';
+        }
+
+        function mostrarAvisoColaborador(msg) {
+            var a = document.getElementById('colabAviso');
+            if (!a) return;
+            a.textContent = msg || '';
+            if (msg) setTimeout(function() {
+                if (a.textContent === msg) a.textContent = '';
+            }, 3000);
+        }
+
+        // Adiciona outro colaborador como responsável deste inventário.
+        function adicionarResponsavel() {
+            var s = document.getElementById('colaboradorSelect');
+            if (!s || s.value === '') {
+                mostrarAvisoColaborador('Selecione um colaborador.');
+                return;
+            }
+
+            var c = colaboradoresDisponiveis[parseInt(s.value, 10)];
+            if (!c) return;
+
+            if (colaboradoresSelecionados.some(function(x) { return x.cracha === c.cracha; })) {
+                mostrarAvisoColaborador('Este colaborador já está neste inventário.');
+                return;
+            }
+
+            colaboradoresSelecionados.push({ cracha:c.cracha, nome:c.nome });
+            renderizarColaboradores();
+
+            s.value = '';
+            atualizarCrachaColaborador();
+            mostrarAvisoColaborador('');
+        }
+
+        // Remove o colaborador somente dos responsáveis deste inventário.
+        function removerResponsavel(cracha) {
+            colaboradoresSelecionados = colaboradoresSelecionados.filter(function(c) {
+                return c.cracha !== String(cracha);
+            });
+            renderizarColaboradores();
+        }
+
+        function renderizarColaboradores() {
+            var l = document.getElementById('colaboradoresLista');
+            if (!l) return;
+
+            if (!colaboradoresSelecionados.length) {
+                l.innerHTML = '<div class="colab-vazio">Nenhum responsável adicionado ao inventário.</div>';
+                return;
+            }
+
+            var h = '';
+            colaboradoresSelecionados.forEach(function(c) {
+                h += '<div class="colab-item">' +
+                    '<div class="colab-info">' +
+                    '<div class="colab-nome">' + c.nome + '</div>' +
+                    '<div class="colab-cracha">Crachá: ' + c.cracha + '</div>' +
+                    '</div>' +
+                    '<button type="button" class="btn-remove-colab" title="Remover deste inventário" onclick="removerResponsavel(\'' +
+                    c.cracha + '\')">×</button>' +
+                    '</div>';
+            });
+            l.innerHTML = h;
+        }
+
+        function coletarColaboradores() {
+            return colaboradoresSelecionados.map(function(c) {
+                return { cracha:c.cracha, nome:c.nome };
+            });
+        }
+
+        function aplicarColaboradores(lista) {
+            colaboradoresSelecionados = Array.isArray(lista) ? lista.map(function(c) {
+                return { cracha:String(c.cracha), nome:String(c.nome) };
+            }) : [];
+            renderizarColaboradores();
+        }
+
+        // ===== GERENCIAMENTO DA LISTA DE COLABORADORES =====
+
+        function abrirAdicionarColaborador() {
+            var conteudo = document.getElementById('colabManageConteudo');
+            var titulo = document.getElementById('colabManageTitulo');
+
+            titulo.textContent = 'Adicionar outro colaborador';
+
+            conteudo.innerHTML =
+                '<div class="manage-form">' +
+                    '<div class="full"><label>Nome completo</label>' +
+                    '<input type="text" id="novoColabNome" placeholder="Digite o nome do colaborador"></div>' +
+                    '<div><label>Crachá</label>' +
+                    '<input type="text" id="novoColabCracha" inputmode="numeric" placeholder="Digite o crachá"></div>' +
+                '</div>' +
+                '<div class="manage-action">' +
+                    '<button class="manage-cancel" onclick="fecharGerenciadorColaborador()">Cancelar</button>' +
+                    '<button class="manage-confirm" onclick="confirmarAdicionarColaborador()">Adicionar</button>' +
+                '</div>';
+
+            document.getElementById('colabManageOverlay').style.display = 'flex';
+            setTimeout(function(){ document.getElementById('novoColabNome').focus(); }, 50);
+        }
+
+        function confirmarAdicionarColaborador() {
+            var nome = document.getElementById('novoColabNome').value.trim();
+            var cracha = document.getElementById('novoColabCracha').value.trim();
+
+            if (!nome || !cracha) {
+                alert('Informe o nome e o crachá do colaborador.');
+                return;
+            }
+
+            if (colaboradoresDisponiveis.some(function(c) {
+                return c.cracha === cracha;
+            })) {
+                alert('Já existe um colaborador cadastrado com este crachá.');
+                return;
+            }
+
+            colaboradoresDisponiveis.push({ cracha:cracha, nome:nome.toUpperCase() });
+            carregarOpcoesColaboradores();
+            fecharGerenciadorColaborador();
+            mostrarAvisoColaborador('Colaborador adicionado à lista.');
+        }
+
+        function abrirExcluirColaborador() {
+            var conteudo = document.getElementById('colabManageConteudo');
+            var titulo = document.getElementById('colabManageTitulo');
+
+            titulo.textContent = 'Excluir colaborador existente';
+
+            var h = '<label style="display:block;font-size:10px;font-weight:800;color:#7c705a;margin-bottom:5px;text-transform:uppercase;">Selecione o colaborador que deseja excluir</label>';
+            h += '<select id="excluirColabSelect" class="manage-delete-select">';
+            h += '<option value="">Selecione...</option>';
+
+            colaboradoresDisponiveis.forEach(function(c, i) {
+                h += '<option value="' + i + '">' + c.nome + ' — Crachá ' + c.cracha + '</option>';
+            });
+
+            h += '</select>';
+            h += '<div class="manage-action">' +
+                    '<button class="manage-cancel" onclick="fecharGerenciadorColaborador()">Cancelar</button>' +
+                    '<button class="manage-delete" style="flex:1;min-height:38px;border:0;border-radius:7px;cursor:pointer;background:#c97a3f;color:white;font-family:inherit;font-weight:700;" onclick="confirmarExcluirColaborador()">Excluir</button>' +
+                 '</div>';
+
+            conteudo.innerHTML = h;
+            document.getElementById('colabManageOverlay').style.display = 'flex';
+        }
+
+        function confirmarExcluirColaborador() {
+            var s = document.getElementById('excluirColabSelect');
+            if (!s || s.value === '') {
+                alert('Selecione o colaborador que deseja excluir.');
+                return;
+            }
+
+            var indice = parseInt(s.value, 10);
+            var c = colaboradoresDisponiveis[indice];
+            if (!c) return;
+
+            if (colaboradoresSelecionados.some(function(x) {
+                return x.cracha === c.cracha;
+            })) {
+                if (!confirm('Este colaborador está adicionado a este inventário. Excluir também dos responsáveis deste inventário?')) {
+                    return;
+                }
+                removerResponsavel(c.cracha);
+            }
+
+            colaboradoresDisponiveis.splice(indice, 1);
+            carregarOpcoesColaboradores();
+            fecharGerenciadorColaborador();
+            mostrarAvisoColaborador('Colaborador excluído da lista.');
+        }
+
+        function fecharGerenciadorColaborador() {
+            var o = document.getElementById('colabManageOverlay');
+            if (o) o.style.display = 'none';
+        }
+
         var vasilhames = [
             { nome: "Galao Preto 50kg", peso: 2.45 },
             { nome: "Galao Dileta Azul Alto 25kg", peso: 1.48 },
@@ -411,17 +771,7 @@
             { codigo: "IQ01", descricao: "ACETONA P.A" }
         ];
 
-        var todosDados = dadosProducao.concat(dadosLab);
-
-        function verificarCodigosDuplicados() {
-            var vistos = {};
-            var duplicados = [];
-            todosDados.forEach(function(item) {
-                if (vistos[item.codigo]) duplicados.push(item.codigo);
-                vistos[item.codigo] = true;
-            });
-            if (duplicados.length) { console.warn('Codigos duplicados encontrados no cadastro:', duplicados); }
-        }
+        var todosDados = dadosProducao.concat(dadosLab.slice().reverse());
 
         function normalizarTexto(texto) {
             return texto.trim()
@@ -467,12 +817,6 @@
             return true;
         }
 
-        function finalizarCalculo() {
-            atualizarStats();
-            aplicarFiltro();
-            agendarSalvarRascunho();
-        }
-
         function cardsVisiveis() {
             var c = document.getElementById('cardsContainer');
             return c ? window.getComputedStyle(c).display !== 'none' : false;
@@ -496,8 +840,8 @@
             estoque.classList.remove('input-invalido');
             estoque.removeAttribute('title');
             var textoDigitado = estoque.value.trim();
-            if (textoDigitado === '') { resultado.value = ''; finalizarCalculo(); return; }
-            if (/^x$/i.test(textoDigitado)) { resultado.value = 'COMPRAR'; resultado.classList.add('status-comprar'); finalizarCalculo(); return; }
+            if (textoDigitado === '') { resultado.value = ''; agendarSalvarRascunho(); return; }
+            if (/^x$/i.test(textoDigitado)) { resultado.value = 'COMPRAR'; resultado.classList.add('status-comprar'); agendarSalvarRascunho(); return; }
             if (!validarFormato(textoDigitado)) {
                 estoque.classList.add('input-invalido');
                 estoque.setAttribute('title', 'Formato nao reconhecido. Use numeros ou ex: 8x25');
@@ -508,7 +852,7 @@
             if (liquido > 0) { resultado.value = liquido.toFixed(2); }
             else if (liquido === 0) { resultado.value = 'OK'; resultado.classList.add('status-ok'); }
             else { resultado.value = 'COMPRAR (' + liquido.toFixed(2) + ')'; resultado.classList.add('status-comprar'); }
-            finalizarCalculo();
+            agendarSalvarRascunho();
         }
 
         function montarOpcoesVasilhame() {
@@ -529,12 +873,12 @@
 
         function criarCelula(item) {
             var opts = montarOpcoesVasilhame();
-            return '<td class="codigo" data-codigo="' + item.codigo + '">' + item.codigo + '</td>' +
-                '<td class="descricao" data-codigo="' + item.codigo + '">' + item.descricao + '</td>' +
-                '<td class="estoque" data-codigo="' + item.codigo + '"><input type="text" id="estoque_' + item.codigo + '" oninput="calcular(\'' + item.codigo + '\')"></td>' +
-                '<td class="vasilhame" data-codigo="' + item.codigo + '"><select id="vas_' + item.codigo + '" onchange="onVasilhameChange(\'' + item.codigo + '\')">' + opts + '</select></td>' +
-                '<td class="peso" data-codigo="' + item.codigo + '"><input type="text" id="peso_' + item.codigo + '" readonly></td>' +
-                '<td class="resultado" data-codigo="' + item.codigo + '"><input type="text" id="resultado_' + item.codigo + '" readonly></td>';
+            return '<td class="codigo">' + item.codigo + '</td>' +
+                '<td class="descricao">' + item.descricao + '</td>' +
+                '<td class="estoque"><input type="text" id="estoque_' + item.codigo + '" oninput="calcular(\'' + item.codigo + '\')"></td>' +
+                '<td class="vasilhame"><select id="vas_' + item.codigo + '" onchange="onVasilhameChange(\'' + item.codigo + '\')">' + opts + '</select></td>' +
+                '<td class="peso"><input type="text" id="peso_' + item.codigo + '" readonly></td>' +
+                '<td class="resultado"><input type="text" id="resultado_' + item.codigo + '" readonly></td>';
         }
 
         function criarCelulaVazia() {
@@ -576,7 +920,6 @@
         }
 
         function carregarTabela() {
-            verificarCodigosDuplicados();
             montarTabela(dadosProducao, 'tabela');
             montarTabela(dadosLab, 'tabelaLab');
             var cardsContainer = document.getElementById('cardsContainer');
@@ -586,60 +929,10 @@
 
             var rascunho = null;
             try { rascunho = JSON.parse(localStorage.getItem(RASCUNHO_KEY) || 'null'); } catch (e) { rascunho = null; }
-            if (rascunho && Object.keys(rascunho).length > 0) {
+            if (rascunho && rascunho.estoque && Object.keys(rascunho.estoque).length > 0) {
                 aplicarDados(rascunho);
                 mostrarStatus('Rascunho recuperado automaticamente.');
-            } else {
-                atualizarStats();
             }
-            aplicarFiltro();
-        }
-
-        function atualizarStats() {
-            var el = document.getElementById('statsBar');
-            if (!el) return;
-            var comprar = 0, ok = 0, preenchido = 0;
-            todosDados.forEach(function(item) {
-                var r = elPorItem('resultado', item.codigo);
-                if (!r || !r.value) return;
-                preenchido++;
-                if (r.classList.contains('status-comprar')) comprar++; else ok++;
-            });
-            var pendente = todosDados.length - preenchido;
-            el.innerHTML =
-                '<span class="stat-item stat-total">Total <b>' + todosDados.length + '</b></span>' +
-                '<span class="stat-item stat-comprar">Comprar <b>' + comprar + '</b></span>' +
-                '<span class="stat-item stat-ok">OK <b>' + ok + '</b></span>' +
-                '<span class="stat-item stat-pendente">Pendente <b>' + pendente + '</b></span>';
-        }
-
-        function statusDoItem(item) {
-            var r = elPorItem('resultado', item.codigo);
-            if (!r || !r.value) return 'pendente';
-            return r.classList.contains('status-comprar') ? 'comprar' : 'ok';
-        }
-
-        function aplicarFiltro() {
-            var buscaEl = document.getElementById('buscaInput');
-            var statusEl = document.getElementById('statusFiltro');
-            if (!buscaEl || !statusEl) return;
-            var texto = buscaEl.value.toLowerCase().trim();
-            var statusFiltro = statusEl.value;
-            todosDados.forEach(function(item) {
-                var textoOk = !texto || item.codigo.toLowerCase().indexOf(texto) !== -1 || item.descricao.toLowerCase().indexOf(texto) !== -1;
-                var statusOk = !statusFiltro || statusDoItem(item) === statusFiltro;
-                var visivel = textoOk && statusOk;
-                var tds = document.querySelectorAll('td[data-codigo="' + item.codigo + '"]');
-                tds.forEach(function(td) { td.classList.toggle('filtro-oculto', !visivel); });
-                var card = document.getElementById('card_' + item.codigo);
-                if (card) card.classList.toggle('filtro-oculto', !visivel);
-            });
-        }
-
-        function limparFiltro() {
-            document.getElementById('buscaInput').value = '';
-            document.getElementById('statusFiltro').value = '';
-            aplicarFiltro();
         }
 
         var RASCUNHO_KEY = 'inventario_rascunho_v5';
@@ -655,20 +948,23 @@
         var MAX_HISTORICO = 20;
 
         function coletarDadosAtuais() {
-            var dadosSalvos = {};
+            var estoqueSalvo = {};
             todosDados.forEach(function(item) {
                 var estoque = elPorItem('estoque', item.codigo);
                 var vas = elPorItem('vas', item.codigo);
-                if (estoque && estoque.value) { dadosSalvos[item.codigo] = { e: estoque.value, v: vas ? vas.value : '' }; }
+                if (estoque && estoque.value) { estoqueSalvo[item.codigo] = { e: estoque.value, v: vas ? vas.value : '' }; }
             });
-            return dadosSalvos;
+            return { colaboradores: coletarColaboradores(), estoque: estoqueSalvo };
         }
 
         function aplicarDados(dadosSalvos) {
+            var estoqueSalvo = (dadosSalvos && dadosSalvos.estoque) ? dadosSalvos.estoque : (dadosSalvos || {});
+            var colaboradores = (dadosSalvos && Array.isArray(dadosSalvos.colaboradores)) ? dadosSalvos.colaboradores : [];
+            aplicarColaboradores(colaboradores);
             todosDados.forEach(function(item) {
                 var estoque = elPorItem('estoque', item.codigo);
                 var vas = elPorItem('vas', item.codigo);
-                var d = dadosSalvos[item.codigo];
+                var d = estoqueSalvo[item.codigo];
                 if (estoque) estoque.value = (d && d.e) ? d.e : '';
                 if (vas) vas.value = (d && d.v !== undefined) ? d.v : '';
                 if (d && d.v) { onVasilhameChange(item.codigo); } else { calcular(item.codigo); }
@@ -688,17 +984,13 @@
         function salvarArquivo() {
             var dadosSalvos = coletarDadosAtuais();
             salvarNoHistorico(dadosSalvos);
-            try {
-                var json = JSON.stringify(dadosSalvos, null, 2);
-                var blob = new Blob([json], { type: 'application/json' });
-                var link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = 'inventario_' + new Date().toISOString().slice(0, 10) + '.json';
-                link.click();
-                mostrarStatus('Arquivo salvo e adicionado ao Historico!');
-            } catch (e) {
-                mostrarStatus('Nao foi possivel baixar o arquivo neste visualizador. Abra a pagina no Safari ou Chrome.');
-            }
+            var json = JSON.stringify(dadosSalvos, null, 2);
+            var blob = new Blob([json], { type: 'application/json' });
+            var link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'inventario_' + new Date().toISOString().slice(0, 10) + '.json';
+            link.click();
+            mostrarStatus('Arquivo salvo e adicionado ao Historico!');
         }
 
         function abrirArquivo() { document.getElementById('fileInput').click(); }
@@ -708,13 +1000,7 @@
             if (!arquivo) return;
             var reader = new FileReader();
             reader.onload = function(e) {
-                try {
-                    var dados = JSON.parse(e.target.result);
-                    if (confirm('Carregar este arquivo? Os dados atuais na tela serao substituidos.')) {
-                        aplicarDados(dados);
-                        mostrarStatus('Dados carregados!');
-                    }
-                }
+                try { aplicarDados(JSON.parse(e.target.result)); mostrarStatus('Dados carregados!'); }
                 catch (err) { mostrarStatus('Erro ao ler arquivo!'); }
             };
             reader.readAsText(arquivo);
@@ -730,8 +1016,11 @@
             } else {
                 var html = '';
                 lista.forEach(function(item) {
-                    var qtd = Object.keys(item.dados).length;
-                    html += '<div class="historico-item"><div class="historico-info"><b>' + item.data + '</b><br><span>' + qtd + ' produto(s)</span></div>' +
+                    var dadosHistorico = item.dados || {};
+                    var estoqueHistorico = dadosHistorico.estoque || dadosHistorico;
+                    var qtd = Object.keys(estoqueHistorico).length;
+                    var qtdColab = Array.isArray(dadosHistorico.colaboradores) ? dadosHistorico.colaboradores.length : 0;
+                    html += '<div class="historico-item"><div class="historico-info"><b>' + item.data + '</b><br><span>' + qtd + ' produto(s) · ' + qtdColab + ' colaborador(es)</span></div>' +
                         '<div class="historico-acoes"><button class="btn-hist-load" onclick="carregarHistorico(' + item.id + ')">Carregar</button>' +
                         '<button class="btn-hist-del" onclick="excluirHistorico(' + item.id + ')">Excluir</button></div></div>';
                 });
@@ -743,8 +1032,7 @@
         function fecharHistorico() { document.getElementById('historicoOverlay').style.display = 'none'; }
 
         function carregarHistorico(id) {
-            var lista = [];
-            try { lista = JSON.parse(localStorage.getItem(HISTORICO_KEY) || '[]'); } catch (e) { mostrarStatus('Historico indisponivel neste navegador.'); return; }
+            var lista = JSON.parse(localStorage.getItem(HISTORICO_KEY) || '[]');
             var item = lista.filter(function(l) { return l.id === id; })[0];
             if (!item) return;
             if (confirm('Carregar este salvamento?')) { aplicarDados(item.dados); fecharHistorico(); mostrarStatus('Salvamento de ' + item.data + ' carregado!'); }
@@ -752,16 +1040,21 @@
 
         function excluirHistorico(id) {
             if (!confirm('Excluir este salvamento?')) return;
-            try {
-                var lista = JSON.parse(localStorage.getItem(HISTORICO_KEY) || '[]');
-                lista = lista.filter(function(l) { return l.id !== id; });
-                localStorage.setItem(HISTORICO_KEY, JSON.stringify(lista));
-            } catch (e) { mostrarStatus('Historico indisponivel neste navegador.'); }
+            var lista = JSON.parse(localStorage.getItem(HISTORICO_KEY) || '[]');
+            lista = lista.filter(function(l) { return l.id !== id; });
+            localStorage.setItem(HISTORICO_KEY, JSON.stringify(lista));
             abrirHistorico();
         }
 
         function exportarCSV() {
-            var csv = 'Codigo;Descricao;Estoque Fisico;Vasilhame;Peso;Total Liquido\n';
+            var csv = 'Responsaveis pelo Inventario\n';
+            if (colaboradoresSelecionados.length === 0) {
+                csv += 'Nenhum colaborador informado\n';
+            } else {
+                csv += 'Cracha;Nome\n';
+                colaboradoresSelecionados.forEach(function(c){ csv += c.cracha + ';' + c.nome + '\n'; });
+            }
+            csv += '\nCodigo;Descricao;Estoque Fisico;Vasilhame;Peso;Total Liquido\n';
             for (var i = 0; i < todosDados.length; i++) {
                 var e = elPorItem('estoque', todosDados[i].codigo);
                 var v = elPorItem('vas', todosDados[i].codigo);
@@ -789,21 +1082,35 @@
                     if (p) p.value = '';
                     if (r) { r.value = ''; r.classList.remove('status-ok', 'status-comprar'); }
                 });
+                aplicarColaboradores([]);
                 try { localStorage.removeItem(RASCUNHO_KEY); } catch (e) {}
-                atualizarStats();
-                aplicarFiltro();
                 mostrarStatus('Todos os dados foram limpos!');
             }
         }
 
         function imprimir() {
-            var inputs = document.querySelectorAll('input[type="text"]');
+            // Prepara os responsáveis em uma área própria para a impressão.
+            var nomesImpressao = document.getElementById('responsaveisImpressaoNomes');
+            if (nomesImpressao) {
+                if (colaboradoresSelecionados && colaboradoresSelecionados.length) {
+                    nomesImpressao.textContent = colaboradoresSelecionados.map(function(c) {
+                        return c.nome + ' (Crachá: ' + c.cracha + ')';
+                    }).join('  |  ');
+                } else {
+                    nomesImpressao.textContent = 'Nenhum colaborador informado';
+                }
+            }
+
+            var inputs = document.querySelectorAll('input[type="text"]:not(#colaboradorCracha)');
             for (var i = 0; i < inputs.length; i++) {
                 if (!inputs[i].value || inputs[i].value.trim() === '') { inputs[i].classList.add('print-hidden'); }
             }
-            var sels = document.querySelectorAll('select');
+
+            var sels = document.querySelectorAll('select:not(#colaboradorSelect)');
             for (var j = 0; j < sels.length; j++) { sels[j].classList.add('print-hidden'); }
+
             window.print();
+
             setTimeout(function() {
                 for (var k = 0; k < inputs.length; k++) { inputs[k].classList.remove('print-hidden'); }
                 for (var l = 0; l < sels.length; l++) { sels[l].classList.remove('print-hidden'); }
@@ -816,7 +1123,8 @@
         }
 
         document.getElementById('historicoOverlay').addEventListener('click', function(e) { if (e.target === this) fecharHistorico(); });
-        document.addEventListener('keydown', function(e) { if (e.key === 'Escape') fecharHistorico(); });
+        document.getElementById('colabManageOverlay').addEventListener('click', function(e) { if (e.target === this) fecharGerenciadorColaborador(); });
+        document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { fecharHistorico(); fecharGerenciadorColaborador(); } });
 
         var SENHA_ACESSO = 'gal2811';
 
@@ -841,6 +1149,8 @@
             }
         } catch (e) {}
 
+        carregarOpcoesColaboradores();
+        renderizarColaboradores();
         carregarTabela();
 
         if ('serviceWorker' in navigator) {

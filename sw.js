@@ -1,4 +1,4 @@
-const CACHE_NAME = 'inventario-trat-v2';
+const CACHE_NAME = 'inventario-trat-v3';
 const urlsToCache = [
     './',
     './index.html',
