@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Planilha de Inventario - Tratamento de Superficie</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2b2416">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Inventario TRAT">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="icon" href="icon-192.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { color-scheme: light; }
+        body { font-family: 'Poppins', 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif; background: #2b2416; padding: 20px; color: #222; -webkit-font-smoothing: antialiased; }
+        h1 { text-align: center; margin-bottom: 4px; font-size: 34px; font-weight: 800; color: #e3b23a; letter-spacing: 0.3px; text-shadow: 0 2px 4px rgba(0,0,0,0.4); }
+        .subtitle { text-align: center; margin-bottom: 10px; font-size: 17px; color: #b7a98d; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; }
+        .title-divider { width: 90px; height: 4px; background: linear-gradient(90deg, #d17a3d, #e3b23a, #6fb0aa); margin: 0 auto 24px; border-radius: 4px; }
+        .container { max-width: 1400px; margin: 0 auto; background: #f5f0e8; padding: 28px 30px; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.3); border: 2px solid #7c705a; }
+        .secao-titulo { font-size: 16px; font-weight: 800; color: #2b2416; background: linear-gradient(90deg, #d17a3d, #e3b23a); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin: 20px 0 8px; padding: 6px 12px; border-left: 4px solid #d17a3d; border-radius: 0 6px 6px 0; }
+        .secao-titulo:first-of-type { margin-top: 0; }
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 11.5px; font-family: inherit; }
+        th { color: white; padding: 10px 4px; text-align: center; font-weight: 700; letter-spacing: 0.5px; font-size: 12px; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+        th.col-codigo { background: #d17a3d; }
+        th.col-descricao { background: #7ea87f; }
+        th.col-estoque { background: #e3b23a; color: #2b2416; text-shadow: none; }
+        th.col-peso { background: #9c8aa8; }
+        th.col-resultado { background: #6fb0aa; }
+        td { padding: 4px 3px; border: 1px solid #ddd; text-align: center; color: #222; }
+        tr:nth-child(even) { background: #f8f9fb; }
+        tr:hover { background: #e8f0fe; }
+        .codigo { width: 55px; font-weight: 700; color: #2c3644; font-size: 10.5px; }
+        .descricao { width: 140px; text-align: left; font-size: 10.5px; color: #333; }
+        .estoque { width: 90px; background: #fff8e1; }
+        .vasilhame { width: 100px; }
+        .peso { width: 60px; background: #f3e5f5; font-size: 10px; }
+        .resultado { width: 70px; background: #e0f2f1; font-weight: 700; color: #2e7d32; }
+        .resultado input.status-comprar { background-color: #ffebee !important; color: #c62828 !important; }
+        .resultado input.status-ok { background-color: #e8f5e9 !important; color: #2e7d32 !important; }
+        input, select { width: 100%; padding: 3px; border: 1px solid #ccc; border-radius: 3px; font-size: 11.5px; text-align: center; font-family: inherit; background-color: #ffffff; color: #222; }
+        input:focus, select:focus { border-color: #d17a3d; outline: none; box-shadow: 0 0 5px rgba(209,122,61,0.5); }
+        input[readonly] { background-color: #e8f5e9; font-weight: 700; color: #2e7d32; border: none; }
+        select { cursor: pointer; font-size: 10px; }
+        select option { color: #222; background-color: #ffffff; }
+        .cards-container { display: none; }
+        .card { background: white; border-radius: 10px; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 2px solid #e0e0e0; }
+        .card-codigo { font-weight: 800; font-size: 14px; color: #d17a3d; }
+        .card-descricao { font-size: 12px; color: #333; font-weight: 600; text-align: right; flex: 1; margin-left: 8px; }
+        .card-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .card-field { display: flex; flex-direction: column; }
+        .card-field label { font-size: 9px; font-weight: 700; color: #7c705a; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+        .card-field input, .card-field select { font-size: 14px; padding: 8px 6px; text-align: center; border-radius: 6px; border: 1.5px solid #ccc; min-height: 40px; }
+        .card-field input:focus, .card-field select:focus { border-color: #d17a3d; box-shadow: 0 0 6px rgba(209,122,61,0.4); }
+        .card-field input[readonly] { background-color: #e8f5e9; font-weight: 700; color: #2e7d32; border: 1.5px solid #a5d6a7; }
+        .card-field.resultado-card { grid-column: 1 / -1; }
+        .card-field.resultado-card input { font-size: 16px; font-weight: 800; }
+        .card-field input.status-comprar { background-color: #ffebee !important; color: #c62828 !important; border-color: #ef9a9a !important; }
+        .card-field input.status-ok { background-color: #e8f5e9 !important; color: #2e7d32 !important; border-color: #a5d6a7 !important; }
+        .card-resultado-label { background: #6fb0aa; color: white; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 3px 8px; border-radius: 4px; display: inline-block; margin-bottom: 2px; }
+        .buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 26px; padding-top: 20px; border-top: 1px solid #eee; }
+        .buttons button { display: inline-flex; align-items: center; gap: 6px; padding: 11px 22px; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; letter-spacing: 0.2px; font-family: inherit; box-shadow: 0 2px 6px rgba(0,0,0,0.12); transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease; }
+        .buttons button:hover { transform: translateY(-2px); box-shadow: 0 5px 14px rgba(0,0,0,0.18); }
+        .buttons button:active { transform: translateY(0); box-shadow: 0 2px 6px rgba(0,0,0,0.12); }
+        .btn-save { background: #d17a3d; color: white; }
+        .btn-save:hover { background: #b8682f; }
+        .btn-export { background: #7ea87f; color: white; }
+        .btn-export:hover { background: #6a956b; }
+        .btn-clear { background: #c97a3f; color: white; }
+        .btn-clear:hover { background: #a86230; }
+        .btn-load { background: #e3b23a; color: #2b2416; }
+        .btn-load:hover { background: #c99e2f; }
+        .btn-print { background: #6fb0aa; color: white; }
+        .btn-print:hover { background: #5a9c96; }
+        .btn-history { background: #9c8aa8; color: white; }
+        .btn-history:hover { background: #857490; }
+        .status { text-align: center; margin-top: 12px; color: #7c705a; font-size: 12px; font-weight: 500; min-height: 16px; }
+        .legend { text-align: center; margin: 10px 0 18px; font-size: 11.5px; color: #2b2416; background: #b7a98d; padding: 12px; border-radius: 8px; line-height: 1.6; }
+        .legend b { color: #2b2416; }
+        .stats-bar { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 0 0 16px; }
+        .stat-item { font-size: 12px; font-weight: 700; padding: 7px 14px; border-radius: 20px; background: #e8e2d4; color: #2b2416; letter-spacing: 0.3px; }
+        .stat-item b { font-size: 14px; margin-left: 4px; }
+        .stat-comprar { background: #ffebee; color: #c62828; }
+        .stat-ok { background: #e8f5e9; color: #2e7d32; }
+        .stat-pendente { background: #eeeeee; color: #616161; }
+        .filtro-bar { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; align-items: center; justify-content: center; }
+        .filtro-bar input[type="text"] { max-width: 280px; padding: 9px 12px; border: 1.5px solid #7c705a; border-radius: 20px; font-size: 13px; background: #fff; text-align: left; }
+        .filtro-bar select { max-width: 170px; padding: 9px 12px; border: 1.5px solid #7c705a; border-radius: 20px; font-size: 13px; background: #fff; }
+        .filtro-bar .btn-limpar-filtro { padding: 8px 14px; border-radius: 20px; border: 1.5px solid #7c705a; background: #f5f0e8; color: #2b2416; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; }
+        .filtro-bar .btn-limpar-filtro:hover { background: #e8e2d4; }
+        td.filtro-oculto, .card.filtro-oculto { opacity: 0.1; pointer-events: none; transition: opacity 0.15s ease; }
+        input.input-invalido, .card-field input.input-invalido { border-color: #e65100 !important; background-color: #fff3e0 !important; }
+        #fileInput { display: none; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; }
+        .modal-box { background: #f5f0e8; border-radius: 8px; max-width: 520px; width: 90%; max-height: 80vh; display: flex; flex-direction: column; border: 2px solid #7c705a; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid #eee; }
+        .modal-header h2 { font-size: 16px; color: #333; }
+        .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: #999; line-height: 1; }
+        .modal-close:hover { color: #333; }
+        .modal-body { padding: 5px 20px 20px; overflow-y: auto; }
+        .historico-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; gap: 10px; }
+        .historico-info { font-size: 13px; color: #333; }
+        .historico-info span { font-size: 11px; color: #777; }
+        .historico-acoes { display: flex; gap: 6px; flex-shrink: 0; }
+        .btn-hist-load { background: #d17a3d; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .btn-hist-load:hover { background: #b8682f; }
+        .btn-hist-del { background: #c97a3f; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .btn-hist-del:hover { background: #a86230; }
+        @media (max-width: 1024px) {
+            body { padding: 8px; }
+            h1 { font-size: 22px; }
+            .subtitle { font-size: 13px; }
+            .container { padding: 14px 12px; border-radius: 8px; }
+            .legend { font-size: 10px; padding: 8px; margin: 6px 0 12px; }
+            .table-wrap { display: none; }
+            .cards-container { display: block; }
+            .buttons { gap: 6px; margin-top: 16px; padding-top: 14px; }
+            .buttons button { flex: 1 1 calc(50% - 6px); min-width: 130px; padding: 13px 10px; font-size: 12px; justify-content: center; }
+            .filtro-bar input[type="text"], .filtro-bar select { max-width: none; flex: 1 1 auto; }
+        }
+        @media (pointer: coarse) and (min-width: 1025px) {
+            td { padding: 8px 5px; }
+            input, select { min-height: 34px; font-size: 12.5px; }
+            .buttons button { padding: 14px 24px; font-size: 14px; }
+        }
+        @media (max-width: 400px) {
+            h1 { font-size: 18px; }
+            .subtitle { font-size: 11px; }
+            .container { padding: 10px 8px; }
+            .legend { font-size: 9px; padding: 6px; }
+            .buttons button { flex: 1 1 100%; min-width: 100%; font-size: 13px; padding: 14px 10px; }
+        }
+        @media print {
+            @page { size: A4 landscape; margin: 5mm; }
+            html, body { height: 100%; margin: 0; padding: 0; }
+            .modal-overlay { display: none !important; }
+            body { background: white; }
+            .container { box-shadow: none; padding: 0; max-width: 100%; border: none; background: white; }
+            .buttons, .legend, .status, .cards-container, .stats-bar, .filtro-bar { display: none !important; }
+            .table-wrap { display: block !important; }
+            .secao-titulo { font-size: 13px; color: #222; background: none; -webkit-text-fill-color: #222; margin: 6px 0 3px; padding: 3px 8px; border-left: 4px solid #d17a3d; font-weight: 700; }
+            .secao-lab { margin-top: 50px; }
+            h1 { font-size: 16px; margin: 0; padding: 2px 0; }
+            .subtitle { font-size: 11px; margin: 0 0 2px; }
+            .title-divider { display: none !important; }
+            table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 11px; }
+            th { color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; font-size: 11px; padding: 4px 3px; }
+            th.col-codigo { background: #d17a3d !important; }
+            th.col-descricao { background: #7ea87f !important; }
+            th.col-estoque { background: #e3b23a !important; color: #2b2416 !important; }
+            th.col-peso { background: #9c8aa8 !important; }
+            th.col-resultado { background: #6fb0aa !important; }
+            td { padding: 3px 2px; border: 0.5px solid #999; font-size: 11px; vertical-align: middle; }
+            .codigo { width: 48px; font-size: 10px; font-weight: 700; }
+            .descricao { width: auto; font-size: 10px; text-align: left; }
+            .vasilhame, .peso { display: none !important; }
+            .estoque input, td input { font-size: 11px; padding: 0; border: none; background: transparent !important; }
+            .estoque { width: auto; background: transparent !important; }
+            .peso { width: auto; background: transparent !important; }
+            .resultado { width: auto; background: transparent !important; }
+            .resultado input { font-weight: 700; }
+            tr:nth-child(even) { background: #f0f0f0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            tr { page-break-inside: avoid; }
+            td input.print-hidden { background: transparent !important; border-color: transparent !important; color: transparent !important; box-shadow: none !important; }
+            td input.print-hidden::placeholder { color: transparent !important; opacity: 0 !important; }
+            td select.print-hidden { background: transparent !important; border-color: transparent !important; color: transparent !important; box-shadow: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <noscript>
+        <div style="max-width:600px;margin:40px auto;background:#ffebee;color:#c62828;padding:20px;border-radius:10px;font-weight:700;text-align:center;font-family:sans-serif;font-size:15px;line-height:1.5;">
+            Esta pagina precisa de JavaScript para mostrar a lista de produtos, e ele esta desativado ou bloqueado neste visualizador.<br><br>
+            Se voce abriu este arquivo pelo WhatsApp, E-mail ou outro app, toque em "Compartilhar" e escolha "Abrir no Safari" (iPhone/iPad) ou "Abrir com Chrome" (Android) em vez de usar a pre-visualizacao do proprio app.
+        </div>
+    </noscript>
+    <div class="container">
+        <h1>Planilha de Inventario</h1>
+        <div class="subtitle">Tratamento de Superficie - Laboratorio</div>
+        <div class="title-divider"></div>
+
+        <div class="legend">
+            <b>Como usar:</b> Digite no campo <b>Estoque Fisico</b> usando o formato: <b>8x25</b> (8 galoes de 25L)<br>
+            Para somar multiplos: <b>8x25 3x10</b> = 200 + 30 = <b>230</b> | Selecione o <b>Vasilhame</b> para descontar o peso automaticamente<br>
+            Digite <b>0</b> para indicar estoque zerado (aparece <b>OK</b>) | Digite <b>X</b> para indicar que nao tem o produto (aparece <b>COMPRAR</b>)
+        </div>
+        
+        <input type="file" id="fileInput" accept=".json" onchange="lerArquivo(event)">
+
+        <div class="stats-bar" id="statsBar"></div>
+
+        <div class="filtro-bar">
+            <input type="text" id="buscaInput" placeholder="Buscar por codigo ou descricao..." oninput="aplicarFiltro()">
+            <select id="statusFiltro" onchange="aplicarFiltro()">
+                <option value="">Todos os status</option>
+                <option value="comprar">Somente Comprar</option>
+                <option value="ok">Somente OK</option>
+                <option value="pendente">Somente Pendentes</option>
+            </select>
+            <button type="button" class="btn-limpar-filtro" onclick="limparFiltro()">Limpar filtro</button>
+        </div>
+
+        <div class="secao-titulo">Tratamento de Superficie (Producao)</div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="codigo col-codigo">Codigo</th>
+                        <th class="descricao col-descricao">Descricao</th>
+                        <th class="estoque col-estoque">Estoque Fisico</th>
+                        <th class="peso col-peso">Peso (kg)</th>
+                        <th class="resultado col-resultado">Total Liquido</th>
+                        <th class="codigo col-codigo">Codigo</th>
+                        <th class="descricao col-descricao">Descricao</th>
+                        <th class="estoque col-estoque">Estoque Fisico</th>
+                        <th class="peso col-peso">Peso (kg)</th>
+                        <th class="resultado col-resultado">Total Liquido</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela"></tbody>
+            </table>
+        </div>
+
+        <div class="secao-titulo secao-lab">Laboratorio</div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="codigo col-codigo">Codigo</th>
+                        <th class="descricao col-descricao">Descricao</th>
+                        <th class="estoque col-estoque">Estoque Fisico</th>
+                        <th class="peso col-peso">Peso (kg)</th>
+                        <th class="resultado col-resultado">Total Liquido</th>
+                        <th class="codigo col-codigo">Codigo</th>
+                        <th class="descricao col-descricao">Descricao</th>
+                        <th class="estoque col-estoque">Estoque Fisico</th>
+                        <th class="peso col-peso">Peso (kg)</th>
+                        <th class="resultado col-resultado">Total Liquido</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaLab"></tbody>
+            </table>
+        </div>
+
+        <div class="cards-container" id="cardsContainer"></div>
+
+        <div class="buttons">
+            <button class="btn-load" onclick="abrirArquivo()">&#128193; Abrir Salvo</button>
+            <button class="btn-save" onclick="salvarArquivo()">&#128190; Salvar Dados</button>
+            <button class="btn-history" onclick="abrirHistorico()">&#128337; Historico</button>
+            <button class="btn-export" onclick="exportarCSV()">&#128203; Exportar CSV</button>
+            <button class="btn-print" onclick="imprimir()">&#128424; Imprimir</button>
+            <button class="btn-clear" onclick="limparEstoque()">&#128465; Limpar Tudo</button>
+        </div>
+
+        <div class="status" id="status"></div>
+    </div>
+
+    <div id="historicoOverlay" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2>Historico de Salvamentos (neste navegador)</h2>
+                <button class="modal-close" onclick="fecharHistorico()">&times;</button>
+            </div>
+            <div id="historicoLista" class="modal-body"></div>
+        </div>
+    </div>
+
+    <script>
+        var vasilhames = [
+            { nome: "Galao Preto 50kg", peso: 2.45 },
+            { nome: "Galao Dileta Azul Alto 25kg", peso: 1.48 },
+            { nome: "Galao 25 Normal", peso: 1.26 },
+            { nome: "Balde Cloro Branco 50kg", peso: 2.85 },
+            { nome: "Galao Azul Cloro 50kg", peso: 2.83 },
+            { nome: "Tambor Cianeto 50kg", peso: 4.67 },
+            { nome: "Tambor de Papelao Cobre", peso: 2.72 },
+            { nome: "Pote de Cianeto AG", peso: 0.08 },
+            { nome: "Galao Passivador AG", peso: 0.41 }
+        ];
+
+        var dadosProducao = [
+            { codigo: "IC01", descricao: "Sulfato de Estanho" },
+            { codigo: "IC02", descricao: "Anodo de Estanho" },
+            { codigo: "IC04", descricao: "Abrilhantador de Prata" },
+            { codigo: "IC07", descricao: "Acido Borico" },
+            { codigo: "IC08", descricao: "Acido Nitrico" },
+            { codigo: "IC09", descricao: "Acido Sulfurico" },
+            { codigo: "IC10", descricao: "Abrilhantador de Estanho" },
+            { codigo: "IC12", descricao: "Cianeto de Cobre" },
+            { codigo: "IC13", descricao: "Anodo de Niquel" },
+            { codigo: "IC14", descricao: "Anodo de Prata" },
+            { codigo: "IC15", descricao: "Anodo de Zinco" },
+            { codigo: "IC16", descricao: "Anodo de Cobre" },
+            { codigo: "IC18", descricao: "Cianeto de Potassio" },
+            { codigo: "IC19", descricao: "Cianeto de Prata 54%" },
+            { codigo: "IC20", descricao: "Cloreto de Niquel" },
+            { codigo: "IC23", descricao: "Abrilhantador de Cobre" },
+            { codigo: "IC34", descricao: "Soda Caustica" },
+            { codigo: "IC36", descricao: "Sulfato de Niquel" },
+            { codigo: "IC39", descricao: "Di Cap Dex" },
+            { codigo: "IC44", descricao: "Di Mersao 010" },
+            { codigo: "IC68", descricao: "Abrilhantador de Zinco" },
+            { codigo: "IC69", descricao: "Nivelador de Zinco" },
+            { codigo: "IC70", descricao: "Cloreto de Potassio" },
+            { codigo: "IC71", descricao: "Cloreto de Zinco" },
+            { codigo: "IC72", descricao: "Passivador Azul Trivalente" },
+            { codigo: "IC74", descricao: "Bio Circle" },
+            { codigo: "IC75", descricao: "Detergente Neutro" },
+            { codigo: "IC76", descricao: "Polidor para Metais" },
+            { codigo: "IC77", descricao: "Abrilhantador de Niquel" },
+            { codigo: "IC78", descricao: "Carregador de Niquel" },
+            { codigo: "IC80", descricao: "Desengraxante Eletrolitico" },
+            { codigo: "IC81", descricao: "Polidor para Zamac" },
+            { codigo: "IC83", descricao: "Removex 420" },
+            { codigo: "IC84", descricao: "Passivador Prata" },
+            { codigo: "IC85", descricao: "Passivador Zinko TRI HR" },
+            { codigo: "IC86", descricao: "Corante liquido amarelo" },
+            { codigo: "IC91", descricao: "Purinikel" },
+            { codigo: "IO12", descricao: "Alcalinizante CA/20" },
+            { codigo: "IO13", descricao: "Precipitador P1000" },
+            { codigo: "IO14", descricao: "Oxidante POLISSO" },
+            { codigo: "IO15", descricao: "Redutor de Sulfato Agua 150" },
+            { codigo: "IO17", descricao: "Estabilizador DBO" },
+            { codigo: "IO18", descricao: "Polimeto Anionico Agua 60" },
+            { codigo: "IO19", descricao: "Red Cromo" },
+            { codigo: "IO21", descricao: "Coagulante AT-20" },
+            { codigo: "IO28", descricao: "Agua PAC Coagulante" },
+            { codigo: "IO37", descricao: "Hipoclore - Aditivo Multiuso" },
+            { codigo: "IO47", descricao: "Corante Azul" },
+            { codigo: "IO57", descricao: "Bac 100 Torre" },
+            { codigo: "IO67", descricao: "Anti-incrustante Torre" },
+            { codigo: "IO77", descricao: "Sequestrante Torre" },
+            { codigo: "IO82", descricao: "F-400" },
+            { codigo: "IO83", descricao: "Desincrustante Chiller" },
+            { codigo: "IO84", descricao: "Redox" },
+            { codigo: "IO85", descricao: "LIP AS1" },
+            { codigo: "IG506", descricao: "UNO SF" },
+            { codigo: "IG507", descricao: "Antiespumante" },
+            { codigo: "IG536", descricao: "Superatavio MDI" },
+            { codigo: "IG537", descricao: "Soluxispa MD 30" },
+            { codigo: "IG538", descricao: "Xispol MD30" },
+            { codigo: "IG617", descricao: "Desmoldante Zamac" },
+            { codigo: "ID45", descricao: "Oleo Armil" }
+        ];
+
+        var dadosLab = [
+            { codigo: "IQ36", descricao: "BICARBONATO DE SODIO" },
+            { codigo: "IQ35", descricao: "VERMELHO DE METILA P.A" },
+            { codigo: "IQ34", descricao: "TISSULFATO DE SODIO P.A" },
+            { codigo: "IQ33", descricao: "TIOCIANATO DE POTASSIO P.A" },
+            { codigo: "IQ32", descricao: "SULTATO DE FERRO III AMONIO P.A" },
+            { codigo: "IQ31", descricao: "SULFETO DE AMONIO 20%" },
+            { codigo: "IQ30", descricao: "SORBITOL P.A" },
+            { codigo: "IQ29", descricao: "SOLUCAO TAMPAO PH 7" },
+            { codigo: "IQ28", descricao: "SOLUCAO TAMPAO PH 4" },
+            { codigo: "IQ27", descricao: "RESORCINA MONOSSODICA P.A" },
+            { codigo: "IQ26", descricao: "PURPURA BROMO CRESOL P.A" },
+            { codigo: "IQ25", descricao: "PRETO EURIOCROMO P.A" },
+            { codigo: "IQ24", descricao: "PERSULFATO DE AMONIO P.A" },
+            { codigo: "IQ23", descricao: "PEROXIDO DE HIDROGENIO P.A" },
+            { codigo: "IQ21", descricao: "OXALATO DE AMONIO P.A" },
+            { codigo: "IQ20", descricao: "NITRATO DE PRATA P.A" },
+            { codigo: "IQ19", descricao: "MUREXIDA P.A" },
+            { codigo: "IQ18", descricao: "IODO P.A" },
+            { codigo: "IQ17", descricao: "IODETO DE POTASSIO P.A" },
+            { codigo: "IQ16", descricao: "HIDROXIDO DE SODIO P.A" },
+            { codigo: "IQ15", descricao: "HIDROXIDO DE AMONIO P.A" },
+            { codigo: "IQ14", descricao: "GLICERINA P.A" },
+            { codigo: "IQ13", descricao: "FORMALDEIDO 10% V/V" },
+            { codigo: "IQ12", descricao: "ETILENOGLICOL MONOBUTIL P.A" },
+            { codigo: "IQ11", descricao: "EDTA SAL DISSODICO P.A" },
+            { codigo: "IQ10", descricao: "CROMATO DE POTASSIO P.A" },
+            { codigo: "IQ09", descricao: "CLORETO DE SODIO P.A" },
+            { codigo: "IQ08", descricao: "CLORETO DE POTASSIO P.A" },
+            { codigo: "IQ07", descricao: "CARBONATO DE SODIO P.A" },
+            { codigo: "IQ06", descricao: "AMIDO P.A" },
+            { codigo: "IQ05", descricao: "ALARANJADO DE METILA P.A" },
+            { codigo: "IQ04", descricao: "ACIDO SULFURICO P.A" },
+            { codigo: "IQ02", descricao: "ACIDO CLORIDRICO P.A" },
+            { codigo: "IQ01", descricao: "ACETONA P.A" }
+        ];
+
+        var todosDados = dadosProducao.concat(dadosLab);
+
+        function verificarCodigosDuplicados() {
+            var vistos = {};
+            var duplicados = [];
+            todosDados.forEach(function(item) {
+                if (vistos[item.codigo]) duplicados.push(item.codigo);
+                vistos[item.codigo] = true;
+            });
+            if (duplicados.length) { console.warn('Codigos duplicados encontrados no cadastro:', duplicados); }
+        }
+
+        function calcularTotal(texto) {
+            if (!texto || texto.trim() === '') return 0;
+            texto = texto.trim();
+            var total = 0;
+            var partes = texto.split(/[\s+]+/).filter(function(p) { return p !== ''; });
+            for (var i = 0; i < partes.length; i++) {
+                var mult = partes[i].split(/x|\*|X/i);
+                if (mult.length === 2) {
+                    var a = parseFloat(mult[0].replace(',', '.'));
+                    var b = parseFloat(mult[1].replace(',', '.'));
+                    if (!isNaN(a) && !isNaN(b)) total += a * b;
+                } else {
+                    var num = parseFloat(partes[i].replace(',', '.'));
+                    if (!isNaN(num)) total += num;
+                }
+            }
+            return total;
+        }
+
+        function validarFormato(texto) {
+            var partes = texto.split(/[\s+]+/).filter(function(p) { return p !== ''; });
+            if (partes.length === 0) return false;
+            for (var i = 0; i < partes.length; i++) {
+                var mult = partes[i].split(/x|\*|X/i);
+                if (mult.length === 2) {
+                    var a = parseFloat(mult[0].replace(',', '.'));
+                    var b = parseFloat(mult[1].replace(',', '.'));
+                    if (isNaN(a) || isNaN(b)) return false;
+                } else if (mult.length === 1) {
+                    var num = parseFloat(partes[i].replace(',', '.'));
+                    if (isNaN(num)) return false;
+                } else { return false; }
+            }
+            return true;
+        }
+
+        function finalizarCalculo() {
+            atualizarStats();
+            aplicarFiltro();
+            agendarSalvarRascunho();
+        }
+
+        function calcular(codigo) {
+            var estoque = document.getElementById('estoque_' + codigo);
+            var pesoEl = document.getElementById('peso_' + codigo);
+            var resultado = document.getElementById('resultado_' + codigo);
+            if (!estoque || !resultado) return;
+            resultado.classList.remove('status-ok', 'status-comprar');
+            estoque.classList.remove('input-invalido');
+            estoque.removeAttribute('title');
+            var textoDigitado = estoque.value.trim();
+            if (textoDigitado === '') { resultado.value = ''; finalizarCalculo(); return; }
+            if (/^x$/i.test(textoDigitado)) { resultado.value = 'COMPRAR'; resultado.classList.add('status-comprar'); finalizarCalculo(); return; }
+            if (!validarFormato(textoDigitado)) {
+                estoque.classList.add('input-invalido');
+                estoque.setAttribute('title', 'Formato nao reconhecido. Use numeros ou ex: 8x25');
+            }
+            var bruto = calcularTotal(estoque.value);
+            var peso = parseFloat(pesoEl.value) || 0;
+            var liquido = bruto - peso;
+            if (liquido > 0) { resultado.value = liquido.toFixed(2); }
+            else if (liquido === 0) { resultado.value = 'OK'; resultado.classList.add('status-ok'); }
+            else { resultado.value = 'COMPRAR (' + liquido.toFixed(2) + ')'; resultado.classList.add('status-comprar'); }
+            finalizarCalculo();
+        }
+
+        function montarOpcoesVasilhame() {
+            var html = '<option value="">Selecione...</option>';
+            for (var i = 0; i < vasilhames.length; i++) {
+                html += '<option value="' + vasilhames[i].peso + '">' + vasilhames[i].nome + ' (' + vasilhames[i].peso + 'kg)</option>';
+            }
+            html += '<option value="0">Sem vasilhame</option>';
+            return html;
+        }
+
+        function onVasilhameChange(codigo) {
+            var sel = document.getElementById('vas_' + codigo);
+            var pesoEl = document.getElementById('peso_' + codigo);
+            if (sel && pesoEl) { pesoEl.value = sel.value; }
+            calcular(codigo);
+        }
+
+        function criarCelula(item) {
+            var opts = montarOpcoesVasilhame();
+            return '<td class="codigo" data-codigo="' + item.codigo + '">' + item.codigo + '</td>' +
+                '<td class="descricao" data-codigo="' + item.codigo + '">' + item.descricao + '</td>' +
+                '<td class="estoque" data-codigo="' + item.codigo + '"><input type="text" id="estoque_' + item.codigo + '" oninput="calcular(\'' + item.codigo + '\')"></td>' +
+                '<td class="vasilhame" data-codigo="' + item.codigo + '"><select id="vas_' + item.codigo + '" onchange="onVasilhameChange(\'' + item.codigo + '\')">' + opts + '</select></td>' +
+                '<td class="peso" data-codigo="' + item.codigo + '"><input type="text" id="peso_' + item.codigo + '" readonly></td>' +
+                '<td class="resultado" data-codigo="' + item.codigo + '"><input type="text" id="resultado_' + item.codigo + '" readonly></td>';
+        }
+
+        function criarCelulaVazia() {
+            return '<td class="codigo"></td><td class="descricao"></td><td class="estoque"></td><td class="vasilhame"></td><td class="peso"></td><td class="resultado"></td>';
+        }
+
+        function criarCard(item) {
+            var opts = montarOpcoesVasilhame();
+            return '<div class="card" id="card_' + item.codigo + '" data-codigo="' + item.codigo + '">' +
+                '<div class="card-header">' +
+                    '<span class="card-codigo">' + item.codigo + '</span>' +
+                    '<span class="card-descricao">' + item.descricao + '</span>' +
+                '</div>' +
+                '<div class="card-fields">' +
+                    '<div class="card-field"><label>Estoque Fisico</label>' +
+                        '<input type="text" id="estoque_' + item.codigo + '" inputmode="decimal" placeholder="ex: 8x25" oninput="calcular(\'' + item.codigo + '\')"></div>' +
+                    '<div class="card-field"><label>Vasilhame</label>' +
+                        '<select id="vas_' + item.codigo + '" onchange="onVasilhameChange(\'' + item.codigo + '\')">' + opts + '</select></div>' +
+                    '<div class="card-field" style="display:none;"><input type="text" id="peso_' + item.codigo + '" readonly></div>' +
+                    '<div class="card-field resultado-card"><span class="card-resultado-label">Total Liquido</span>' +
+                        '<input type="text" id="resultado_' + item.codigo + '" readonly></div>' +
+                '</div></div>';
+        }
+
+        function montarTabela(lista, tbodyId) {
+            var tbody = document.getElementById(tbodyId);
+            var metade = Math.ceil(lista.length / 2);
+            var esquerda = lista.slice(0, metade);
+            var direita = lista.slice(metade);
+            var html = '';
+            var maxLinhas = Math.max(esquerda.length, direita.length);
+            for (var i = 0; i < maxLinhas; i++) {
+                html += '<tr>';
+                html += i < esquerda.length ? criarCelula(esquerda[i]) : criarCelulaVazia();
+                html += i < direita.length ? criarCelula(direita[i]) : criarCelulaVazia();
+                html += '</tr>';
+            }
+            tbody.innerHTML = html;
+        }
+
+        function carregarTabela() {
+            verificarCodigosDuplicados();
+            montarTabela(dadosProducao, 'tabela');
+            montarTabela(dadosLab, 'tabelaLab');
+            var cardsContainer = document.getElementById('cardsContainer');
+            var htmlCards = '';
+            for (var j = 0; j < todosDados.length; j++) { htmlCards += criarCard(todosDados[j]); }
+            cardsContainer.innerHTML = htmlCards;
+
+            var rascunho = null;
+            try { rascunho = JSON.parse(localStorage.getItem(RASCUNHO_KEY) || 'null'); } catch (e) { rascunho = null; }
+            if (rascunho && Object.keys(rascunho).length > 0) {
+                aplicarDados(rascunho);
+                mostrarStatus('Rascunho recuperado automaticamente.');
+            } else {
+                atualizarStats();
+            }
+            aplicarFiltro();
+        }
+
+        function atualizarStats() {
+            var el = document.getElementById('statsBar');
+            if (!el) return;
+            var comprar = 0, ok = 0, preenchido = 0;
+            todosDados.forEach(function(item) {
+                var r = document.getElementById('resultado_' + item.codigo);
+                if (!r || !r.value) return;
+                preenchido++;
+                if (r.classList.contains('status-comprar')) comprar++; else ok++;
+            });
+            var pendente = todosDados.length - preenchido;
+            el.innerHTML =
+                '<span class="stat-item stat-total">Total <b>' + todosDados.length + '</b></span>' +
+                '<span class="stat-item stat-comprar">Comprar <b>' + comprar + '</b></span>' +
+                '<span class="stat-item stat-ok">OK <b>' + ok + '</b></span>' +
+                '<span class="stat-item stat-pendente">Pendente <b>' + pendente + '</b></span>';
+        }
+
+        function statusDoItem(item) {
+            var r = document.getElementById('resultado_' + item.codigo);
+            if (!r || !r.value) return 'pendente';
+            return r.classList.contains('status-comprar') ? 'comprar' : 'ok';
+        }
+
+        function aplicarFiltro() {
+            var buscaEl = document.getElementById('buscaInput');
+            var statusEl = document.getElementById('statusFiltro');
+            if (!buscaEl || !statusEl) return;
+            var texto = buscaEl.value.toLowerCase().trim();
+            var statusFiltro = statusEl.value;
+            todosDados.forEach(function(item) {
+                var textoOk = !texto || item.codigo.toLowerCase().indexOf(texto) !== -1 || item.descricao.toLowerCase().indexOf(texto) !== -1;
+                var statusOk = !statusFiltro || statusDoItem(item) === statusFiltro;
+                var visivel = textoOk && statusOk;
+                var tds = document.querySelectorAll('td[data-codigo="' + item.codigo + '"]');
+                tds.forEach(function(td) { td.classList.toggle('filtro-oculto', !visivel); });
+                var card = document.getElementById('card_' + item.codigo);
+                if (card) card.classList.toggle('filtro-oculto', !visivel);
+            });
+        }
+
+        function limparFiltro() {
+            document.getElementById('buscaInput').value = '';
+            document.getElementById('statusFiltro').value = '';
+            aplicarFiltro();
+        }
+
+        var RASCUNHO_KEY = 'inventario_rascunho_v5';
+        var rascunhoTimeout = null;
+        function agendarSalvarRascunho() {
+            clearTimeout(rascunhoTimeout);
+            rascunhoTimeout = setTimeout(function() {
+                try { localStorage.setItem(RASCUNHO_KEY, JSON.stringify(coletarDadosAtuais())); } catch (e) { console.warn('Nao foi possivel salvar rascunho', e); }
+            }, 400);
+        }
+
+        var HISTORICO_KEY = 'inventario_historico_v5';
+        var MAX_HISTORICO = 20;
+
+        function coletarDadosAtuais() {
+            var dadosSalvos = {};
+            todosDados.forEach(function(item) {
+                var estoque = document.getElementById('estoque_' + item.codigo);
+                var vas = document.getElementById('vas_' + item.codigo);
+                if (estoque && estoque.value) { dadosSalvos[item.codigo] = { e: estoque.value, v: vas ? vas.value : '' }; }
+            });
+            return dadosSalvos;
+        }
+
+        function aplicarDados(dadosSalvos) {
+            todosDados.forEach(function(item) {
+                var estoque = document.getElementById('estoque_' + item.codigo);
+                var vas = document.getElementById('vas_' + item.codigo);
+                var d = dadosSalvos[item.codigo];
+                if (estoque) estoque.value = (d && d.e) ? d.e : '';
+                if (vas) vas.value = (d && d.v !== undefined) ? d.v : '';
+                if (d && d.v) { onVasilhameChange(item.codigo); } else { calcular(item.codigo); }
+            });
+        }
+
+        function salvarNoHistorico(dadosSalvos) {
+            try {
+                var lista = JSON.parse(localStorage.getItem(HISTORICO_KEY) || '[]');
+                var agora = new Date();
+                lista.unshift({ id: agora.getTime(), data: agora.toLocaleString('pt-BR'), dados: dadosSalvos });
+                if (lista.length > MAX_HISTORICO) lista = lista.slice(0, MAX_HISTORICO);
+                localStorage.setItem(HISTORICO_KEY, JSON.stringify(lista));
+            } catch (e) { console.warn('Nao foi possivel salvar no historico', e); }
+        }
+
+        function salvarArquivo() {
+            var dadosSalvos = coletarDadosAtuais();
+            salvarNoHistorico(dadosSalvos);
+            try {
+                var json = JSON.stringify(dadosSalvos, null, 2);
+                var blob = new Blob([json], { type: 'application/json' });
+                var link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = 'inventario_' + new Date().toISOString().slice(0, 10) + '.json';
+                link.click();
+                mostrarStatus('Arquivo salvo e adicionado ao Historico!');
+            } catch (e) {
+                mostrarStatus('Nao foi possivel baixar o arquivo neste visualizador. Abra a pagina no Safari ou Chrome.');
+            }
+        }
+
+        function abrirArquivo() { document.getElementById('fileInput').click(); }
+
+        function lerArquivo(event) {
+            var arquivo = event.target.files[0];
+            if (!arquivo) return;
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    var dados = JSON.parse(e.target.result);
+                    if (confirm('Carregar este arquivo? Os dados atuais na tela serao substituidos.')) {
+                        aplicarDados(dados);
+                        mostrarStatus('Dados carregados!');
+                    }
+                }
+                catch (err) { mostrarStatus('Erro ao ler arquivo!'); }
+            };
+            reader.readAsText(arquivo);
+            event.target.value = '';
+        }
+
+        function abrirHistorico() {
+            var lista = [];
+            try { lista = JSON.parse(localStorage.getItem(HISTORICO_KEY) || '[]'); } catch (e) { lista = []; }
+            var listaEl = document.getElementById('historicoLista');
+            if (lista.length === 0) {
+                listaEl.innerHTML = '<p style="text-align:center;color:#666;padding:20px;">Nenhum salvamento no historico.</p>';
+            } else {
+                var html = '';
+                lista.forEach(function(item) {
+                    var qtd = Object.keys(item.dados).length;
+                    html += '<div class="historico-item"><div class="historico-info"><b>' + item.data + '</b><br><span>' + qtd + ' produto(s)</span></div>' +
+                        '<div class="historico-acoes"><button class="btn-hist-load" onclick="carregarHistorico(' + item.id + ')">Carregar</button>' +
+                        '<button class="btn-hist-del" onclick="excluirHistorico(' + item.id + ')">Excluir</button></div></div>';
+                });
+                listaEl.innerHTML = html;
+            }
+            document.getElementById('historicoOverlay').style.display = 'flex';
+        }
+
+        function fecharHistorico() { document.getElementById('historicoOverlay').style.display = 'none'; }
+
+        function carregarHistorico(id) {
+            var lista = [];
+            try { lista = JSON.parse(localStorage.getItem(HISTORICO_KEY) || '[]'); } catch (e) { mostrarStatus('Historico indisponivel neste navegador.'); return; }
+            var item = lista.filter(function(l) { return l.id === id; })[0];
+            if (!item) return;
+            if (confirm('Carregar este salvamento?')) { aplicarDados(item.dados); fecharHistorico(); mostrarStatus('Salvamento de ' + item.data + ' carregado!'); }
+        }
+
+        function excluirHistorico(id) {
+            if (!confirm('Excluir este salvamento?')) return;
+            try {
+                var lista = JSON.parse(localStorage.getItem(HISTORICO_KEY) || '[]');
+                lista = lista.filter(function(l) { return l.id !== id; });
+                localStorage.setItem(HISTORICO_KEY, JSON.stringify(lista));
+            } catch (e) { mostrarStatus('Historico indisponivel neste navegador.'); }
+            abrirHistorico();
+        }
+
+        function exportarCSV() {
+            var csv = 'Codigo;Descricao;Estoque Fisico;Vasilhame;Peso;Total Liquido\n';
+            for (var i = 0; i < todosDados.length; i++) {
+                var e = document.getElementById('estoque_' + todosDados[i].codigo);
+                var v = document.getElementById('vas_' + todosDados[i].codigo);
+                var p = document.getElementById('peso_' + todosDados[i].codigo);
+                var r = document.getElementById('resultado_' + todosDados[i].codigo);
+                csv += todosDados[i].codigo + ';' + todosDados[i].descricao + ';' + (e ? e.value : '') + ';' + (v ? v.options[v.selectedIndex].text : '') + ';' + (p ? p.value : '') + ';' + (r ? r.value : '') + '\n';
+            }
+            var blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+            var link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'planilha_inventario.csv';
+            link.click();
+            mostrarStatus('CSV exportado!');
+        }
+
+        function limparEstoque() {
+            if (confirm('Limpar todos os dados?')) {
+                todosDados.forEach(function(item) {
+                    var e = document.getElementById('estoque_' + item.codigo);
+                    var v = document.getElementById('vas_' + item.codigo);
+                    var p = document.getElementById('peso_' + item.codigo);
+                    var r = document.getElementById('resultado_' + item.codigo);
+                    if (e) { e.value = ''; e.classList.remove('input-invalido'); e.removeAttribute('title'); }
+                    if (v) v.value = '';
+                    if (p) p.value = '';
+                    if (r) { r.value = ''; r.classList.remove('status-ok', 'status-comprar'); }
+                });
+                try { localStorage.removeItem(RASCUNHO_KEY); } catch (e) {}
+                atualizarStats();
+                aplicarFiltro();
+                mostrarStatus('Todos os dados foram limpos!');
+            }
+        }
+
+        function imprimir() {
+            var inputs = document.querySelectorAll('input[type="text"]');
+            for (var i = 0; i < inputs.length; i++) {
+                if (!inputs[i].value || inputs[i].value.trim() === '') { inputs[i].classList.add('print-hidden'); }
+            }
+            var sels = document.querySelectorAll('select');
+            for (var j = 0; j < sels.length; j++) { sels[j].classList.add('print-hidden'); }
+            window.print();
+            setTimeout(function() {
+                for (var k = 0; k < inputs.length; k++) { inputs[k].classList.remove('print-hidden'); }
+                for (var l = 0; l < sels.length; l++) { sels[l].classList.remove('print-hidden'); }
+            }, 500);
+        }
+
+        function mostrarStatus(msg) {
+            document.getElementById('status').textContent = msg;
+            setTimeout(function() { document.getElementById('status').textContent = ''; }, 3000);
+        }
+
+        document.getElementById('historicoOverlay').addEventListener('click', function(e) { if (e.target === this) fecharHistorico(); });
+        document.addEventListener('keydown', function(e) { if (e.key === 'Escape') fecharHistorico(); });
+
+        carregarTabela();
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('sw.js').catch(function (e) { console.warn('Service worker nao registrado:', e); });
+            });
+        }
+    </script>
+</body>
+</html>
