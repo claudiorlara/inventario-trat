@@ -25,6 +25,7 @@
         .container { max-width: 1400px; margin: 0 auto; background: #f5f0e8; padding: 28px 30px; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.3); border: 2px solid #7c705a; }
         .secao-titulo { font-size: 16px; font-weight: 800; color: #2b2416; background: linear-gradient(90deg, #d17a3d, #e3b23a); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin: 20px 0 8px; padding: 6px 12px; border-left: 4px solid #d17a3d; border-radius: 0 6px 6px 0; }
         .secao-titulo:first-of-type { margin-top: 0; }
+        .secao-check { -webkit-text-fill-color: initial; vertical-align: middle; margin-right: 8px; width: 17px; height: 17px; cursor: pointer; accent-color: #d17a3d; }
         .table-wrap { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; font-size: 11.5px; font-family: inherit; }
         th { color: white; padding: 10px 4px; text-align: center; font-weight: 700; letter-spacing: 0.5px; font-size: 12px; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
@@ -108,14 +109,7 @@
             .colaboradores-box { padding:13px; }
         }
         @media print {
-            .colaboradores-box { box-shadow:none; border:1px solid #999; background:white; margin-bottom:8px; }
-            .colaboradores-form,.colab-aviso { display:none !important; }
-            .colaboradores-titulo { font-size:12px; margin-bottom:5px; }
-            .colaboradores-lista { margin-top:0; gap:5px; }
-            .colab-item { padding:4px 7px; box-shadow:none; }
-            .btn-remove-colab { display:none !important; }
-            .colab-nome { font-size:10px; }
-            .colab-cracha { font-size:8px; }
+            .colaboradores-box { display: none !important; }
         }
         .colab-gerenciar {
             display:flex;
@@ -202,7 +196,7 @@
                 border: 1px solid #888;
                 background: #fff !important;
                 color: #111 !important;
-                font-size: 11px;
+                font-size: 11.5px;
                 line-height: 1.35;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
@@ -264,33 +258,36 @@
             .buttons button { flex: 1 1 100%; min-width: 100%; font-size: 13px; padding: 14px 10px; }
         }
         @media print {
-            @page { size: A4 landscape; margin: 5mm; }
+            @page { size: A4 landscape; margin: 3mm; }
             html, body { height: 100%; margin: 0; padding: 0; }
             .modal-overlay { display: none !important; }
             body { background: white; }
             .container { box-shadow: none; padding: 0; max-width: 100%; border: none; background: white; }
             .buttons, .legend, .status, .cards-container { display: none !important; }
             .table-wrap { display: block !important; }
-            .secao-titulo { font-size: 13px; color: #222; background: none; -webkit-text-fill-color: #222; margin: 6px 0 3px; padding: 3px 8px; border-left: 4px solid #d17a3d; font-weight: 700; }
-            .secao-lab { margin-top: 50px; }
-            h1 { font-size: 16px; margin: 0; padding: 2px 0; }
-            .subtitle { font-size: 11px; margin: 0 0 2px; }
+            .secao-titulo { font-size: 12.5px; color: #222; background: none; -webkit-text-fill-color: #222; margin: 4px 0 2px; padding: 2px 8px; border-left: 4px solid #d17a3d; font-weight: 700; }
+            .secao-check { display: none !important; }
+            .print-hidden-secao { display: none !important; }
+            .secao-lab { margin-top: 8px; }
+            h1 { font-size: 15px; margin: 0; padding: 0; }
+            .subtitle { font-size: 10px; margin: 0 0 1px; }
             .title-divider { display: none !important; }
+            .responsaveis-impressao { margin: 2px 0 4px !important; padding: 3px 6px !important; font-size: 10.5px !important; }
             table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 11px; }
-            th { color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; font-size: 11px; padding: 4px 3px; }
+            th { color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; font-size: 11.5px; padding: 4px 5px; line-height: 1.15; }
             th.col-codigo { background: #d17a3d !important; }
             th.col-descricao { background: #7ea87f !important; }
             th.col-estoque { background: #e3b23a !important; color: #2b2416 !important; }
             th.col-peso { background: #9c8aa8 !important; }
             th.col-resultado { background: #6fb0aa !important; }
-            td { padding: 3px 2px; border: 0.5px solid #999; font-size: 11px; vertical-align: middle; }
-            .codigo { width: 48px; font-size: 10px; font-weight: 700; }
-            .descricao { width: auto; font-size: 10px; text-align: left; }
+            td { padding: 3px 4px; border: 0.5px solid #999; font-size: 12.5px; vertical-align: middle; line-height: 1.2; }
+            .codigo { width: 54px; font-size: 11.5px; font-weight: 700; }
+            .descricao { width: auto; font-size: 12px; text-align: left; }
             .vasilhame, .peso { display: none !important; }
-            .estoque input, td input { font-size: 11px; padding: 0; border: none; background: transparent !important; }
-            .estoque { width: auto; background: transparent !important; }
+            .estoque input, td input { font-size: 12.5px; padding: 0; border: none; background: transparent !important; line-height: 1.2; }
+            .estoque { width: 15%; background: transparent !important; }
             .peso { width: auto; background: transparent !important; }
-            .resultado { width: auto; background: transparent !important; }
+            .resultado { width: 15%; background: transparent !important; }
             .resultado input { font-weight: 700; }
             tr:nth-child(even) { background: #f0f0f0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             tr { page-break-inside: avoid; }
@@ -350,6 +347,7 @@
             <div class="colab-gerenciar">
                 <button type="button" class="btn-manage-add" onclick="abrirAdicionarColaborador()">＋ Adicionar outro colaborador</button>
                 <button type="button" class="btn-manage-del" onclick="abrirExcluirColaborador()">− Excluir colaborador existente</button>
+                <button type="button" class="btn-manage-add" onclick="abrirAdicionarVasilhame()">＋ Adicionar vasilhame (nome e peso)</button>
             </div>
 
             <div id="colabAviso" class="colab-aviso"></div>
@@ -367,9 +365,30 @@
             </div>
         </div>
 
+        <div id="vasilhameManageOverlay" class="modal-overlay">
+            <div class="modal-box colab-manage-box">
+                <div class="modal-header">
+                    <h2>Adicionar vasilhame</h2>
+                    <button class="modal-close" onclick="fecharGerenciadorVasilhame()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="manage-form">
+                        <div class="full"><label>Nome do vasilhame</label>
+                        <input type="text" id="vasilhameNome" placeholder="Ex: Cesto Titanio P"></div>
+                        <div><label>Peso (kg)</label>
+                        <input type="text" id="vasilhamePeso" inputmode="decimal" placeholder="Ex: 0.85"></div>
+                    </div>
+                    <div class="manage-action">
+                        <button class="manage-cancel" onclick="fecharGerenciadorVasilhame()">Cancelar</button>
+                        <button class="manage-confirm" onclick="confirmarAdicionarVasilhame()">Adicionar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <input type="file" id="fileInput" accept=".json" onchange="lerArquivo(event)">
 
-        <div class="secao-titulo">Tratamento de Superficie (Producao)</div>
+        <div class="secao-titulo"><input type="checkbox" class="secao-check" id="imprimirProducao" checked>Tratamento de Superficie (Producao)</div>
         <div id="responsaveisImpressao" class="responsaveis-impressao">
             <strong>Responsáveis pelo Inventário:</strong>
             <span id="responsaveisImpressaoNomes">Nenhum colaborador informado</span>
@@ -395,7 +414,7 @@
             </table>
         </div>
 
-        <div class="secao-titulo secao-lab">Laboratorio</div>
+        <div class="secao-titulo secao-lab"><input type="checkbox" class="secao-check" id="imprimirLab" checked>Laboratorio</div>
         <div class="table-wrap">
             <table>
                 <thead>
@@ -666,7 +685,10 @@
             { nome: "Tambor Cianeto 50kg", peso: 4.67 },
             { nome: "Tambor de Papelao Cobre", peso: 2.72 },
             { nome: "Pote de Cianeto AG", peso: 0.08 },
-            { nome: "Galao Passivador AG", peso: 0.41 }
+            { nome: "Galao Passivador AG", peso: 0.41 },
+            { nome: "Cesto Titanio P", peso: 0.85 },
+            { nome: "Cesto Titanio G", peso: 1.94 },
+            { nome: "Frasco de Vidro 1L", peso: 0.57 }
         ];
 
         var dadosProducao = [
@@ -862,6 +884,53 @@
             }
             html += '<option value="0">Sem vasilhame</option>';
             return html;
+        }
+
+        // ===== GERENCIAMENTO DA LISTA DE VASILHAMES (galoes, tambores, cestos, etc) =====
+
+        function abrirAdicionarVasilhame() {
+            document.getElementById('vasilhameNome').value = '';
+            document.getElementById('vasilhamePeso').value = '';
+            document.getElementById('vasilhameManageOverlay').style.display = 'flex';
+            setTimeout(function () { document.getElementById('vasilhameNome').focus(); }, 50);
+        }
+
+        function fecharGerenciadorVasilhame() {
+            var o = document.getElementById('vasilhameManageOverlay');
+            if (o) o.style.display = 'none';
+        }
+
+        function confirmarAdicionarVasilhame() {
+            var nome = document.getElementById('vasilhameNome').value.trim();
+            var pesoTexto = document.getElementById('vasilhamePeso').value.trim().replace(',', '.');
+            var peso = parseFloat(pesoTexto);
+
+            if (!nome || isNaN(peso) || peso <= 0) {
+                alert('Informe um nome e um peso valido (ex: 0.85) para o vasilhame.');
+                return;
+            }
+
+            if (vasilhames.some(function (v) { return v.nome.toLowerCase() === nome.toLowerCase(); })) {
+                alert('Ja existe um vasilhame cadastrado com este nome.');
+                return;
+            }
+
+            vasilhames.push({ nome: nome, peso: peso });
+            atualizarTodosSelectsVasilhame();
+            fecharGerenciadorVasilhame();
+            mostrarStatus('Vasilhame "' + nome + '" adicionado!');
+        }
+
+        // Reconstroi as opcoes de todos os selects de vasilhame ja existentes na tela,
+        // preservando o que cada um tinha selecionado.
+        function atualizarTodosSelectsVasilhame() {
+            var novoHtml = montarOpcoesVasilhame();
+            var selects = document.querySelectorAll('select[id^="vas_"]');
+            for (var i = 0; i < selects.length; i++) {
+                var valorAtual = selects[i].value;
+                selects[i].innerHTML = novoHtml;
+                selects[i].value = valorAtual;
+            }
         }
 
         function onVasilhameChange(codigo) {
@@ -1082,13 +1151,25 @@
                     if (p) p.value = '';
                     if (r) { r.value = ''; r.classList.remove('status-ok', 'status-comprar'); }
                 });
-                aplicarColaboradores([]);
                 try { localStorage.removeItem(RASCUNHO_KEY); } catch (e) {}
                 mostrarStatus('Todos os dados foram limpos!');
             }
         }
 
         function imprimir() {
+            var imprimirProducao = document.getElementById('imprimirProducao').checked;
+            var imprimirLab = document.getElementById('imprimirLab').checked;
+            if (!imprimirProducao && !imprimirLab) {
+                alert('Marque pelo menos uma secao para imprimir.');
+                return;
+            }
+            var tituloProducao = document.getElementById('imprimirProducao').closest('.secao-titulo');
+            var tabelaWrapProducao = document.getElementById('tabela').closest('.table-wrap');
+            var tituloLab = document.getElementById('imprimirLab').closest('.secao-titulo');
+            var tabelaWrapLab = document.getElementById('tabelaLab').closest('.table-wrap');
+            if (!imprimirProducao) { tituloProducao.classList.add('print-hidden-secao'); tabelaWrapProducao.classList.add('print-hidden-secao'); }
+            if (!imprimirLab) { tituloLab.classList.add('print-hidden-secao'); tabelaWrapLab.classList.add('print-hidden-secao'); }
+
             // Prepara os responsáveis em uma área própria para a impressão.
             var nomesImpressao = document.getElementById('responsaveisImpressaoNomes');
             if (nomesImpressao) {
@@ -1114,6 +1195,10 @@
             setTimeout(function() {
                 for (var k = 0; k < inputs.length; k++) { inputs[k].classList.remove('print-hidden'); }
                 for (var l = 0; l < sels.length; l++) { sels[l].classList.remove('print-hidden'); }
+                tituloProducao.classList.remove('print-hidden-secao');
+                tabelaWrapProducao.classList.remove('print-hidden-secao');
+                tituloLab.classList.remove('print-hidden-secao');
+                tabelaWrapLab.classList.remove('print-hidden-secao');
             }, 500);
         }
 
